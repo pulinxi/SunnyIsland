@@ -9,6 +9,12 @@ namespace engine::resource {
     class ResourceManager;
 }
 
+namespace engine::render
+{
+    class Renderer;
+    class Camera;
+}
+
 namespace engine::core {        // 命名空间的最佳实践：与文件路径一致
     class Time;
 
@@ -24,6 +30,10 @@ namespace engine::core {        // 命名空间的最佳实践：与文件路径
         // 引擎组件
         std::unique_ptr<engine::core::Time> time_;
         std::unique_ptr<engine::resource::ResourceManager> resource_manager_;
+        std::unique_ptr<engine::render::Renderer> renderer_;
+        std::unique_ptr<engine::render::Camera> camera_;
+
+
 
     public:
         GameApp();
@@ -49,12 +59,17 @@ namespace engine::core {        // 命名空间的最佳实践：与文件路径
 
 
         //各模块的初始化/创建函数
-        bool initSDL();
-        bool initTime();
-        bool initResourceManager();
+        [[nodiscard]] bool initSDL();
+        [[nodiscard]] bool initTime();
+        [[nodiscard]] bool initResourceManager();
+        [[nodiscard]] bool initRenderer();
+        [[nodiscard]] bool initCamera();
+
 
         //测试函数
         void testResourceManager();
+        void testRenderer();
+        void testCamera();
 
     };
 
