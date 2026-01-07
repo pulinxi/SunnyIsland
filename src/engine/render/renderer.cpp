@@ -89,7 +89,7 @@ namespace engine::render
         glm::vec2 viewport_size = camera.getViewportSize();
 
         if (repeat.x) {
-            // 使用 glm::mod 进行浮点数取模
+            // 使用 glm::mod 进行浮点数取模，事实上glm的取模操作并不是数学上的取模操作，因为glm可以返回负值，事实上时直接截断而不是根据取模的公式
             start.x = glm::mod(position_screen.x, scaled_tex_w) - scaled_tex_w;
             stop.x = viewport_size.x;
         }
