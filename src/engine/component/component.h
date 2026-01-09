@@ -5,6 +5,14 @@ namespace engine::object
     class GameObject;
 }
 
+
+
+namespace engine::core
+{
+    class Context;
+}
+
+
 namespace engine::component
 {
 
@@ -20,7 +28,7 @@ namespace engine::component
 
 
     protected:
-        engine::object::GameObject* onwer_ = nullptr;       //指向拥有这个组件的GameObject，并且每个组件不可以没有这个指针
+        engine::object::GameObject* owner_ = nullptr;       //指向拥有这个组件的GameObject，并且每个组件不可以没有这个指针
 
     public:
         Component() = default;
@@ -33,17 +41,17 @@ namespace engine::component
         Component(Component&&) = delete;
         Component& operator=(Component&&) = delete;
 
-        void setOnwer(engine::object::GameObject* onwer) { onwer_ = onwer; }
-        engine::object::GameObject* getOnwer() const { return onwer_; }
+        void setOwner(engine::object::GameObject* onwer) { owner_ = onwer; }
+        engine::object::GameObject* getOwner() const { return owner_; }
 
 
     protected:
 
         //关键训话函数，全部设为保护，只有GameObject可以调用（未来把其中一个改为=0实现抽象类）
         virtual void init() {}                      ///< @brief 保留两段初始化的机制，GameObject 添加组件时自动调用，不需要外部调用
-        virtual void handleInput() {}               ///< @brief 处理输入
-        virtual void update(float) {}               ///< @brief 更新
-        virtual void render() {}                    ///< @brief 渲染
+        virtual void handleInput(engine::core::Context&) {}               ///< @brief 处理输入
+        virtual void update(float, engine::core::Context&) = 0;               ///< @brief 更新
+        virtual void render(engine::core::Context&) {}                    ///< @brief 渲染
         virtual void clean() {}                     ///< @brief 清理
 
 

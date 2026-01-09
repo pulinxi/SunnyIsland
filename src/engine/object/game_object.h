@@ -7,6 +7,11 @@
 #include <spdlog/spdlog.h>
 
 
+namespace engine::core
+{
+    class Context;
+}
+
 namespace engine::object
 {
 
@@ -75,7 +80,7 @@ namespace engine::object
             /* std::forward -- 用于实现完美转发。           传递多个参数的时候使用...标识 */
             auto new_component = std::make_unique<T>(std::forward<Args>(args)...);
             T* ptr = new_component.get();             //先获取指针
-            new_component->setOnwer(this);            //设置拥有者
+            new_component->setOwner(this);            //设置拥有者
             components_[type_index] = std::move(new_component);     //移动组件，实际上是把new_component设置为右值，因此这句话之后new_component就不存在了
             ptr->init();                              //初始化组件，不可以用new_component
             spdlog::debug("成功添加component:{} {}", name_, typeid(T).name());
@@ -139,10 +144,10 @@ namespace engine::object
 
 
         // 关键循环函数
-        void update(float delta_time);                ///< @brief 更新所有组件
-        void render();                                ///< @brief 渲染所有组件
+        void update(float delta_time, engine::core::Context& context);                ///< @brief 更新所有组件
+        void render(engine::core::Context& context);                                ///< @brief 渲染所有组件
         void clean();                                 ///< @brief 清理所有组件
-        void handleInput();                           ///< @brief 处理输入
+        void handleInput(engine::core::Context& context);                           ///< @brief 处理输入
 
 
 
