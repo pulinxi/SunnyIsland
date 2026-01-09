@@ -6,6 +6,7 @@
 #include "../render/renderer.h"
 #include "../render/camera.h"
 #include "../input/input_manager.h"
+#include "../object/game_object.h"
 #include "config.h"
 
 namespace engine::core {
@@ -57,6 +58,7 @@ namespace engine::core {
 
         is_running_ = true;
         spdlog::trace("GameApp 初始化成功。");
+        testGameObject();
         return true;
 
 
@@ -276,6 +278,12 @@ namespace engine::core {
                 spdlog::info(" {} 按下中 ", action);
             }
         }
+    }
+
+    void GameApp::testGameObject()
+    {
+        engine::object::GameObject game_object("test_game_object");
+        game_object.addComponent<engine::component::Component>();
     }
 
 } // namespace engine::core

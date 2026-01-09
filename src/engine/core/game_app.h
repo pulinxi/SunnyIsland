@@ -80,6 +80,8 @@ namespace engine::core {        // 命名空间的最佳实践：与文件路径
         void testRenderer();
         void testCamera();
         void testInputManager();
+        void testGameObject();
+
 
     };
 
