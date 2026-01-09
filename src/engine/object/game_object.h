@@ -102,7 +102,7 @@ namespace engine::object
             {
                 return static_cast<T*>(it->second.get());
             }
-
+            return nullptr;
 
         }
 
