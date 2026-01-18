@@ -77,7 +77,7 @@ namespace engine::core {
             is_running_ = false;
             return;
         }
-
+        scene_manager_->handleInput();
     }
 
     void GameApp::update(float delta_time) {
