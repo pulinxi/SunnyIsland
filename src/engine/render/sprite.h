@@ -52,6 +52,8 @@ namespace engine::render
 
 
 
+
+
         // --- getters and setters ---
         const std::string& getTextureId() const { return texture_id_; }                                     ///< @brief 获取纹理 ID
         const std::optional<SDL_FRect>& getSourceRect() const { return source_rect_; }                      ///< @brief 获取源矩形 (如果使用整个纹理则为 std::nullopt)
