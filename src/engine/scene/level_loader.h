@@ -1,50 +1,65 @@
 #pragma once
 #include <string>
-#include <nlohmann/json_fwd.hpp>
+#include <glm/vec2.hpp>
+#include <nlohmann/json.hpp>
+#include <map>
 
-namespace engine::scene
-{
+namespace engine::component {
+    struct TileInfo;
+}
 
+namespace engine::scene {
     class Scene;
 
-
-    class LevelLoader final
-    {
-        std::string map_path_;      //地图路径
-
+    /**
+     * @brief 负责从 Tiled JSON 文件 (.tmj) 加载关卡数据到 Scene 中。
+     */
+    class LevelLoader final {
+        std::string map_path_;      ///< @brief 地图路径（拼接路径时需要）
+        glm::ivec2 map_size_;       ///< @brief 地图尺寸(瓦片数量)
+        glm::ivec2 tile_size_;      ///< @brief 瓦片尺寸(像素)
+        std::map<int, nlohmann::json> tileset_data_;    ///< @brief firstgid -> 瓦片集数据
 
     public:
         LevelLoader() = default;
 
         /**
-         *@brief 加载关卡数据到指定的 Scene 对象中。
-         *
+         * @brief 加载关卡数据到指定的 Scene 对象中。
          * @param map_path Tiled JSON 地图文件的路径。
          * @param scene 要加载数据的目标 Scene 对象。
-         * @return true 加载成功
-         * @return false 加载失败
+         * @return bool 是否加载成功。
          */
         bool loadLevel(const std::string& map_path, Scene& scene);
 
-
     private:
+        void loadImageLayer(const nlohmann::json& layer_json, Scene& scene);    ///< @brief 加载图片图层
+        void loadTileLayer(const nlohmann::json& layer_json, Scene& scene);     ///< @brief 加载瓦片图层
+        void loadObjectLayer(const nlohmann::json& layer_json, Scene& scene);   ///< @brief 加载对象图层
 
-        void loadImageLayer(const nlohmann::json& layer_json, Scene& scene);    //加载背景图片层
-        void loadTileLayer(const nlohmann::json& layer_json, Scene& scene);     //加载瓦片层
-        void loadObjectLayer(const nlohmann::json& layer_json, Scene& scene);   //加载对象层
+        /**
+         * @brief 根据全局 ID 获取瓦片信息。
+         * @param gid 全局 ID。
+         * @return engine::component::TileInfo 瓦片信息。
+         */
+        engine::component::TileInfo getTileInfoByGid(int gid);
+
+        /**
+         * @brief 加载 Tiled tileset 文件 (.tsj)。
+         * @param tileset_path Tileset 文件路径。
+         * @param first_gid 此 tileset 的第一个全局 ID。
+         */
+        void loadTileset(const std::string& tileset_path, int first_gid);
 
         /**
          * @brief 解析图片路径，合并地图路径和相对路径。例如：
-         * 1. 地图路径："assets/maps/level1.tmj"
+         * 1. 文件路径："assets/maps/level1.tmj"
          * 2. 相对路径："../textures/Layers/back.png"
          * 3. 最终路径："assets/textures/Layers/back.png"
-         * @param image_path （图片）相对路径
+         * @param relative_path 相对路径（相对于文件）
+         * @param file_path 文件路径
          * @return std::string 解析后的完整路径。
          */
-        std::string resolvePath(std::string image_path);
-
-
+        std::string resolvePath(const std::string& relative_path, const std::string& file_path);
     };
 
-
-}
+} // namespace engine::scene

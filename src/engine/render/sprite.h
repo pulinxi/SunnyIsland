@@ -30,6 +30,13 @@ namespace engine::render
     public:
 
         /**
+         * @brief 当已经拥有其他构造函数，但是又需要用到默认构造函数时，必须像这样显示声明
+         *
+         */
+        Sprite() = default;
+
+
+        /**
          *@brief Construct a new Sprite object
          *
          * @param texture_id 纹理资源标识符，不应为空
