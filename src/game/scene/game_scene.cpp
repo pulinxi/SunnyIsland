@@ -113,7 +113,7 @@ namespace game::scene {
         }
         else
         {
-            pc->velocity_.x * 0.9f;
+            pc->velocity_.x *= 0.9f;
         }
         if (input_manager.isActionDown("move_right"))
         {
@@ -121,7 +121,7 @@ namespace game::scene {
         }
         else
         {
-            pc->velocity_.x * 0.9f;
+            pc->velocity_.x *= 0.9f;
         }
         if (input_manager.isActionPressed("jump")) {
             pc->velocity_.y = -400.0f;
