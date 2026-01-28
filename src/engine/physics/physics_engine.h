@@ -6,6 +6,7 @@
 namespace engine::component
 {
     class PhysicsComponent;
+    class TileLayerComponent;
 }
 namespace engine::object
 {
@@ -22,6 +23,7 @@ namespace engine::physics
     {
     private:
         std::vector<engine::component::PhysicsComponent*> components_;      //存储注册的物理组件
+        std::vector<engine::component::TileLayerComponent*> collision_tile_layers_;  //注册的碰撞瓦片容器
         glm::vec2 gravity_ = { 0.0f,980.0f };           // 默认重力值(像素/秒^2,相当于100像素对应1m)
         float max_speed_ = 500.9f;                      //最大速度(像素/秒)
 
@@ -40,12 +42,24 @@ namespace engine::physics
 
         void registerComponent(engine::component::PhysicsComponent* component);     //注销物理组件
         void unregisterComponent(engine::component::PhysicsComponent* component);   //注册物理组件
-
+        void registerCollisionLayer(engine::component::TileLayerComponent* layer);  //注册用于碰撞检测的TileLayerComonent
+        void unregisterCollisionLayer(engine::component::TileLayerComponent* layer);//注销用于碰撞检测的TileLayerComonent
+            
         /**
          *@brief 检测并处理对象之间的碰撞，并记录需要游戏逻辑处理的碰撞对。
          *
          */
         void checkObjectCollisions();
+        /**
+         *@brief 检测并处理游戏对象和瓦片之间的碰撞,并且对于瓦片层不管是圆形还是矩形都只需要检测其最小AABB包围盒就可以了
+         * @note 对包围盒的四个角的点检测而不是整个包围盒，并且逻辑不完善，
+         * 比如这里默认认为需要检测的对象长度为1~2个瓦片宽度，当对象长度大于2个瓦片长度时，
+         * 如果瓦片从物体正中间产生碰撞，则会出现对象直接穿过瓦片的现象，
+         * 目前想到的解决方法是在AABB包围盒的每一条变上添加一定量的点，使得每个相邻点间隔小于或等于瓦片宽度
+         * @param pc 物理组件
+         * @param delta_time 单位时间
+         */
+        void resolveTileCollision(engine::component::PhysicsComponent* pc, float delta_time);
 
         /**
          *@brief 核心循环，会更新所有注册的物理组件的状态，lesson15只考虑重力

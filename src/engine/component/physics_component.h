@@ -11,6 +11,11 @@ namespace engine::component
 
     class TransformComponent;
 
+    /**
+     * @brief 管理GameObject的物理属性
+     *
+     * 存储速度、质量、力和重力设置。与PhysicsEngine交互。
+     */
     class PhysicsComponent final : public Component
     {
         friend class engine::object::GameObject;

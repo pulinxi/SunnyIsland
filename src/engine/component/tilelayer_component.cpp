@@ -4,6 +4,7 @@
 #include "../render/renderer.h"
 #include "../render/camera.h"
 #include <spdlog/spdlog.h>
+#include "../physics/physics_engine.h"
 
 
 namespace engine::component
@@ -55,6 +56,14 @@ namespace engine::component
                     context.getRenderer().drawSprite(context.getCamera(), tile_info.sprite, tile_left_top_pos);
                 }
             }
+        }
+    }
+
+    void TileLayerComponent::clean()
+    {
+        if (physics_engine_)
+        {
+            physics_engine_->unregisterCollisionLayer(this);
         }
     }
 

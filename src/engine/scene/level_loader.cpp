@@ -205,7 +205,41 @@ namespace engine::scene {
         }
     }
 
+    engine::component::TileType LevelLoader::getTileType(const nlohmann::json& tile_json)
+    {
+        if (tile_json.contains("properties"))
+        {
+            auto& properties = tile_json["properties"];
+            for (auto& propertie : properties)
+            {
+                if (propertie.contains("name") && propertie["name"] == "solid")
+                {
+                    auto is_solid = propertie.value("value", false);
+                    return is_solid ? engine::component::TileType::SOLID : engine::component::TileType::NORMAL;
+                }
+                //TODO：可以添加其他更多的自定义属性处理逻辑
+            }
+        }
+        return engine::component::TileType::NORMAL;
+    }
 
+
+
+    engine::component::TileType LevelLoader::getTileTypeById(const nlohmann::json& tileset_json, int local_id)
+    {
+        if (tileset_json.contains("tiles"))
+        {
+            auto& tiles = tileset_json["tiles"];
+            for (auto& tile : tiles)
+            {
+                if (tile.contains("id") && tile["id"] == local_id)
+                {
+                    return getTileType(tile);
+                }
+            }
+        }
+        return engine::component::TileType::NORMAL;
+    }
 
     engine::component::TileInfo LevelLoader::getTileInfoByGid(int gid)
     {
@@ -243,7 +277,8 @@ namespace engine::scene {
                 static_cast<float>(tile_size_.y)
             };
             engine::render::Sprite sprite{ texture_id, texture_rect };
-            return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);    // 目前只完成渲染，以后再考虑瓦片类型
+            auto tile_type = getTileTypeById(tileset, local_id);
+            return engine::component::TileInfo(sprite, tile_type);    // 目前只完成渲染，以后再考虑瓦片类型
         }
         else {   // 这是多图片的情况
             if (!tileset.contains("tiles")) {   // 没有tiles字段的话不符合数据格式要求，直接返回空的瓦片信息
@@ -273,7 +308,8 @@ namespace engine::scene {
                         static_cast<float>(tile_json.value("height", image_height))
                     };
                     engine::render::Sprite sprite{ texture_id, texture_rect };
-                    return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);    // 目前只完成渲染，以后再考虑瓦片类型
+                    auto tile_type = getTileType(tile_json);
+                    return engine::component::TileInfo(sprite, tile_type);    // 目前只完成渲染，以后再考虑瓦片类型
                 }
             }
         }

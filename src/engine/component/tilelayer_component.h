@@ -13,7 +13,9 @@ namespace engine::core {
     class Context;
 }
 
-
+namespace engine::physics {
+    class PhysicsEngine;
+}
 
 namespace engine::component
 {
@@ -41,7 +43,12 @@ namespace engine::component
         TileInfo(render::Sprite s = render::Sprite(), TileType t = TileType::EMPTY) : sprite(std::move(s)), type(t) {}
     };
 
-
+    /**
+     * @brief 管理和渲染瓦片地图层。
+     *
+     * 存储瓦片地图的布局、每个瓦片的精灵信息和类型。
+     * 负责在渲染阶段绘制可见的瓦片。
+     */
     class TileLayerComponent final : public Component
     {
         friend class engine::object::GameObject;
@@ -52,6 +59,7 @@ namespace engine::component
         std::vector<TileInfo> tiles_;   //瓦片存储所有瓦片信息，按照行主序存储,index = y * map_width_ + x
         glm::vec2 offset_ = { 0.0f,0.0f };  //瓦片层在世界中的偏移量 (瓦片层通常不需要缩放及旋转，因此不引入Transform组件),offset_ 最好也保持默认的0，以免增加不必要的复杂性
         bool is_hidden_ = false;
+        engine::physics::PhysicsEngine* physics_engine_ = nullptr;   ///< @brief 物理引擎的指针， clean()函数中可能需要反注册
 
     public:
         TileLayerComponent() = default;
@@ -101,13 +109,14 @@ namespace engine::component
 
         void setOffset(const glm::vec2& offset) { offset_ = offset; }       ///< @brief 设置瓦片层的偏移量
         void setHidden(bool hidden) { is_hidden_ = hidden; }                ///< @brief 设置是否隐藏（不渲染）
+        void setPhysicsEngine(engine::physics::PhysicsEngine* physics_engine) { physics_engine_ = physics_engine; }
 
 
     protected:
         void init() override;
         void update(float, engine::core::Context&) override {}
         void render(engine::core::Context& context) override;
-
+        void clean() override;
     };
 
 
