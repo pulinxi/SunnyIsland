@@ -61,9 +61,21 @@ namespace engine::physics
                 /* --- 通过保护性测试后，正式执行逻辑 --- */
 
                 if (collision::checkCollision(*cc_a, *cc_b)) {
-                    // TODO: 并不是所有碰撞都需要插入collision_pairs_，未来会添加过滤条件
-                    // 记录碰撞对
-                    collision_pairs_.emplace_back(obj_a, obj_b);
+                    // TODO: 并不是所有碰撞都需要插入collision_pairs_，只有碰撞了会触发事件的两个物体才需要记录碰撞对（我是这么理解的）
+                    //比如可移动物体与solid
+                    if (obj_a->getTag() != "solid" && obj_b->getTag() == "solid")
+                    {
+                        resolveSolidObjectCollisions(obj_a, obj_b);
+                    }
+                    else if (obj_a->getTag() == "solid" && obj_b->getTag() != "solid")//如果未来上面这两种情况也会有事件触发则也需要加入碰撞对
+                    {
+                        resolveSolidObjectCollisions(obj_a, obj_b);
+                    }
+                    else
+                    {
+                        // 记录碰撞对
+                        collision_pairs_.emplace_back(obj_a, obj_b);
+                    }
                 }
             }
         }
@@ -170,9 +182,55 @@ namespace engine::physics
             }
         }
         // 更新物体位置，并限制最大速度
-        tc->setPosition(new_obj_pos);
+        tc->translate(new_obj_pos - obj_pos);     //使用translate方法，避免直接设置位置，因为碰撞盒可能会有偏移量
         pc->velocity_ = glm::clamp(pc->velocity_, -max_speed_, max_speed_);
 
+    }
+
+    void PhysicsEngine::resolveSolidObjectCollisions(engine::object::GameObject* move_obj, engine::object::GameObject* solid_obj)
+    {
+        auto* move_tc = move_obj->getComponent < engine::component::TransformComponent>();
+        auto* move_pc = move_obj->getComponent<engine::component::PhysicsComponent>();
+        auto* move_cc = move_obj->getComponent<engine::component::ColliderComponent>();
+        auto* solid_cc = solid_obj->getComponent<engine::component::ColliderComponent>();
+
+        // 这里只能获取期望位置，无法获取当前帧初始位置，因此无法进行轴分离碰撞检测
+        /* 未来可以进行重构，让这里可以获取初始位置。但是展示另外一种处理方法 */
+        auto move_aabb = move_cc->getWorldAABB();
+        auto solid_aabb = solid_cc->getWorldAABB();
+
+        // --- 使用最小平移向量解决碰撞问题 ---
+        auto move_center = move_aabb.position + move_aabb.size / 2.0f;
+        auto solid_center = solid_aabb.position + solid_aabb.size / 2.0f;
+        // 计算两个包围盒的重叠部分
+        auto overlap = glm::vec2(move_aabb.size / 2.0f + solid_aabb.size / 2.0f) - glm::abs(move_center - solid_center);
+        if (overlap.x < 0.1f && overlap.y < 0.1f) return;  // 如果重叠部分太小，则认为没有碰撞
+
+        if (overlap.x < overlap.y) {    // 如果重叠部分在x方向上更小，则认为碰撞发生在x方向上（推出x方向平移向量最小）
+            if (move_center.x < solid_center.x) {
+                // 移动物体在左边，让它贴着右边SOLID物体（相当于向左移出重叠部分），y方向正常移动
+                move_tc->translate(glm::vec2(-overlap.x, 0.0f));
+                // 如果速度为正(向右移动)，则归零 （if判断不可少，否则可能出现错误吸附）
+                if (move_pc->velocity_.x > 0.0f) move_pc->velocity_.x = 0.0f;
+            }
+            else {
+                // 移动物体在右边，让它贴着左边SOLID物体（相当于向右移出重叠部分），y方向正常移动
+                move_tc->translate(glm::vec2(overlap.x, 0.0f));
+                if (move_pc->velocity_.x < 0.0f) move_pc->velocity_.x = 0.0f;
+            }
+        }
+        else {                        // 重叠部分在y方向上更小，则认为碰撞发生在y方向上（推出y方向平移向量最小）
+            if (move_center.y < solid_center.y) {
+                // 移动物体在上面，让它贴着下面SOLID物体（相当于向上移出重叠部分），x方向正常移动
+                move_tc->translate(glm::vec2(0.0f, -overlap.y));
+                if (move_pc->velocity_.y > 0.0f) move_pc->velocity_.y = 0.0f;
+            }
+            else {
+                // 移动物体在下面，让它贴着上面SOLID物体（相当于向下移出重叠部分），x方向正常移动
+                move_tc->translate(glm::vec2(0.0f, overlap.y));
+                if (move_pc->velocity_.y < 0.0f) move_pc->velocity_.y = 0.0f;
+            }
+        }
     }
 
     void PhysicsEngine::update(float delta_time)
