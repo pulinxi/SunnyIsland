@@ -5,6 +5,7 @@
 #include "../physics/physics_engine.h"
 #include <algorithm> // for std::remove_if
 #include <spdlog/spdlog.h>
+#include "../render/camera.h"
 
 namespace engine::scene
 {
@@ -28,7 +29,8 @@ namespace engine::scene
 
         //先更新物理引擎
         context_.getPhysicsEngine().update(delta_time);
-
+        //更新相机
+        context_.getCamera().update(delta_time);
         for (auto it = game_objects_.begin();it != game_objects_.end();)
         {
             if (*it && !(*it)->isNeedRemove())// 正常更新游戏对象
