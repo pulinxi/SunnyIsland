@@ -129,6 +129,7 @@ namespace engine::physics
                     //撞墙了！速度归零，x方向移动到贴着墙的位置
                     new_obj_pos.x = tile_x * layer->getTileSize().x - obj_size.x;
                     pc->velocity_.x = 0.0f;
+                    pc->setCollidedRight(true);
                 }
                 else
                 {
@@ -141,6 +142,7 @@ namespace engine::physics
                         if (new_obj_pos.y > (tile_y_bottom + 1) * layer->getTileSize().y - obj_size.y - height_right)
                         {
                             new_obj_pos.y = (tile_y_bottom + 1) * layer->getTileSize().y - obj_size.y - height_right;
+                            pc->setCollidedBelow(true);
                         }
                     }
 
@@ -161,6 +163,7 @@ namespace engine::physics
                     // 撞墙了！速度归零，x方向移动到贴着墙的位置
                     new_obj_pos.x = (tile_x + 1) * layer->getTileSize().x;
                     pc->velocity_.x = 0.0f;
+                    pc->setCollidedLeft(true);
                 }
                 else
                 {
@@ -172,6 +175,7 @@ namespace engine::physics
                         if (new_obj_pos.y > (tile_y_bottom + 1) * layer->getTileSize().y - obj_size.y - height_left)
                         {
                             new_obj_pos.y = (tile_y_bottom + 1) * layer->getTileSize().y - obj_size.y - height_left;
+                            pc->setCollidedBelow(true);
                         }
                     }
                 }
@@ -192,6 +196,7 @@ namespace engine::physics
                     // 到达地面！速度归零，y方向移动到贴着地面的位置
                     new_obj_pos.y = tile_y * layer->getTileSize().y - obj_size.y;
                     pc->velocity_.y = 0.0f;
+                    pc->setCollidedBelow(true);
                 }
                 else
                 {
@@ -205,6 +210,7 @@ namespace engine::physics
                         if (new_obj_pos.y > (tile_y + 1) * layer->getTileSize().y - obj_size.y - height) {
                             new_obj_pos.y = (tile_y + 1) * layer->getTileSize().y - obj_size.y - height;
                             pc->velocity_.y = 0.0f;     // 只有向下运动时才需要让 y 速度归零
+                            pc->setCollidedBelow(true);
                         }
                     }
                 }
@@ -223,6 +229,7 @@ namespace engine::physics
                     // 撞到天花板！速度归零，y方向移动到贴着天花板的位置
                     new_obj_pos.y = (tile_y + 1) * layer->getTileSize().y;
                     pc->velocity_.y = 0.0f;
+                    pc->setCollidedAbove(true);
                 }
             }
         }
@@ -256,26 +263,42 @@ namespace engine::physics
                 // 移动物体在左边，让它贴着右边SOLID物体（相当于向左移出重叠部分），y方向正常移动
                 move_tc->translate(glm::vec2(-overlap.x, 0.0f));
                 // 如果速度为正(向右移动)，则归零 （if判断不可少，否则可能出现错误吸附）
-                if (move_pc->velocity_.x > 0.0f) move_pc->velocity_.x = 0.0f;
+                if (move_pc->velocity_.x > 0.0f)
+                {
+                    move_pc->velocity_.x = 0.0f;
+                    move_pc->setCollidedRight(true);
+                }
             }
             else {
                 // 移动物体在右边，让它贴着左边SOLID物体（相当于向右移出重叠部分），y方向正常移动
                 move_tc->translate(glm::vec2(overlap.x, 0.0f));
-                if (move_pc->velocity_.x < 0.0f) move_pc->velocity_.x = 0.0f;
+                if (move_pc->velocity_.x < 0.0f)
+                {
+                    move_pc->velocity_.x = 0.0f;
+                    move_pc->setCollidedLeft(true);
+                }
             }
         }
         else {                        // 重叠部分在y方向上更小，则认为碰撞发生在y方向上（推出y方向平移向量最小）
             if (move_center.y < solid_center.y) {
                 // 移动物体在上面，让它贴着下面SOLID物体（相当于向上移出重叠部分），x方向正常移动
                 move_tc->translate(glm::vec2(0.0f, -overlap.y));
-                if (move_pc->velocity_.y > 0.0f) move_pc->velocity_.y = 0.0f;
+                if (move_pc->velocity_.y > 0.0f)
+                {
+                    move_pc->velocity_.y = 0.0f;
+                    move_pc->setCollidedBelow(true);
+                }
             }
             else {
                 // 移动物体在下面，让它贴着上面SOLID物体（相当于向下移出重叠部分），x方向正常移动
                 move_tc->translate(glm::vec2(0.0f, overlap.y));
-                if (move_pc->velocity_.y < 0.0f) move_pc->velocity_.y = 0.0f;
+                if (move_pc->velocity_.y < 0.0f)
+                {
+                    move_pc->velocity_.y = 0.0f;
+                    move_pc->setCollidedAbove(true);
+                }
+                }
             }
-        }
     }
 
     void PhysicsEngine::applyWorldBounds(engine::component::PhysicsComponent* pc)
@@ -341,6 +364,8 @@ namespace engine::physics
             {
                 continue;
             }
+
+            pc->resetCollisionFlags();  //清空碰撞标志
 
             //应用重力(如果组件受重力影响) : F=g*m
             if (pc->isUseGravity())

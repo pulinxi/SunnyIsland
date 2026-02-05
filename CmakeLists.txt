@@ -1,6 +1,6 @@
 # 标题
 cmake_minimum_required(VERSION 3.10.0)
-project(SunnyIsland VERSION 0.1.0 LANGUAGES C CXX)
+project(SunnyLand VERSION 0.1.0 LANGUAGES C CXX)
 
 # 设置C++标准
 set(CMAKE_CXX_STANDARD 20)
@@ -28,35 +28,38 @@ find_package(glm REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(spdlog REQUIRED)
 
-
 # 添加可执行文件
 add_executable(${TARGET} 
-                    src/main.cpp
-                    src/engine/core/game_app.cpp
-                    src/engine/core/time.cpp
-                    src/engine/resource/resource_manager.cpp
-                    src/engine/resource/texture_manager.cpp
-                    src/engine/resource/audio_manager.cpp
-                    src/engine/resource/font_manager.cpp
-                    src/engine/render/sprite.cpp
-                    src/engine/render/camera.cpp
-                    src/engine/render/renderer.cpp
-                    src/engine/core/config.cpp
-                    src/engine/input/input_manager.cpp
-                    src/engine/object/game_object.cpp
-                    src/engine/core/context.cpp
-                    src/engine/component/sprite_component.cpp
-                    src/engine/component/transform_component.cpp
-                    src/engine/scene/scene.cpp
-                    src/engine/scene/scene_manager.cpp
-                    src/game/scene/game_scene.cpp
-                    src/engine/component/parallax_component.cpp
-                    src/engine/scene/level_loader.cpp
-                    src/engine/component/tilelayer_component.cpp
-                    src/engine/physics/physics_engine.cpp
-                    src/engine/component/physics_component.cpp
-                    src/engine/physics/collision.cpp
-                    src/engine/component/collider_component.cpp
+                src/main.cpp
+                src/engine/core/game_app.cpp
+                src/engine/core/time.cpp
+                src/engine/core/config.cpp
+                src/engine/core/context.cpp
+                src/engine/resource/resource_manager.cpp
+                src/engine/resource/texture_manager.cpp
+                src/engine/resource/audio_manager.cpp
+                src/engine/resource/font_manager.cpp
+                src/engine/render/renderer.cpp
+                src/engine/render/camera.cpp
+                src/engine/input/input_manager.cpp
+                src/engine/object/game_object.cpp
+                src/engine/component/sprite_component.cpp
+                src/engine/component/transform_component.cpp
+                src/engine/component/parallax_component.cpp
+                src/engine/component/tilelayer_component.cpp
+                src/engine/component/physics_component.cpp
+                src/engine/component/collider_component.cpp
+                src/engine/physics/physics_engine.cpp
+                src/engine/physics/collision.cpp
+                src/engine/scene/scene.cpp
+                src/engine/scene/scene_manager.cpp
+                src/engine/scene/level_loader.cpp
+                src/game/scene/game_scene.cpp
+                src/game/component/player_component.cpp
+                src/game/component/state/idle_state.cpp
+                src/game/component/state/walk_state.cpp
+                src/game/component/state/jump_state.cpp
+                src/game/component/state/fall_state.cpp
                 )
 
 # 链接库
