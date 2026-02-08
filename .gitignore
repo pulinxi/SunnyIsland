@@ -1,6 +1,54 @@
-/build
+# Mac
+.DS_Store
+**/.DS_Store
 
+# IDE
+.vscode/
+.config/
+.idea/
+.cursor/
 
-/SunnyIsland-Windows.exe
-/SunnyIsland-Windows.ilk
-/SunnyIsland-Windows.pdb
+# build
+build/
+build-*/
+cmake-build-*/
+*-darwin
+*-Darwin
+
+# msc
+.clang-tidy
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.pdb
+*.out
+*.app
+*.-Darwin
