@@ -232,6 +232,11 @@ namespace engine::scene {
                 {
                     game_object->setTag(tag.value());
                 }
+                // 如果是危险瓦片，且没有手动设置标签，则自动设置标签为 "hazard"
+                else if (tile_info.type == engine::component::TileType::HAZARD)
+                {
+                    game_object->setTag("hazard");
+                }
 
                 //获取重力信息并添加
                 auto gravity = getTileProperty<bool>(tile_json, "gravity");
@@ -402,6 +407,11 @@ namespace engine::scene {
                     auto is_unisolid = property.value("value", false);
                     return is_unisolid ? engine::component::TileType::UNISOLID : engine::component::TileType::NORMAL;
                 }
+                else if (property.contains("name") && property["name"] == "hazard") {
+                    auto is_hazard = property.value("value", false);
+                    return is_hazard ? engine::component::TileType::HAZARD : engine::component::TileType::NORMAL;
+                }
+                // TODO: 可以在这里添加更多的自定义属性处理逻辑
             }
         }
         return engine::component::TileType::NORMAL;

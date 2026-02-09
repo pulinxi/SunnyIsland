@@ -49,6 +49,11 @@ cmake-build-*/
 # Executables
 *.exe
 *.pdb
+*.ilk
 *.out
 *.app
 *.-Darwin
+
+SunnyLand-Windows.exe
+SunnyLand-Windows.ilk
+SunnyLand-Windows.pdb
