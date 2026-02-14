@@ -37,6 +37,7 @@ namespace engine::component
         SLOPE_1_2,  ///< @brief 斜坡瓦片，高度:左1  右1/2
         SLOPE_2_0,  ///< @brief 斜坡瓦片，高度:左1/2右0
         HAZARD,     ///< @brief 危险瓦片（例如火焰、尖刺等）
+        LADDER,     //梯子瓦片
         // 未来补充其它类型
     };
 

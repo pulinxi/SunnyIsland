@@ -3,14 +3,11 @@
 
 namespace game::component::state {
 
-class HurtState final : public PlayerState {
+class ClimbState final : public PlayerState {
     friend class game::component::PlayerComponent;
-private:
-    float stunned_timer_ = 0.0f;  ///< @brief 硬直计时器，单位为秒
-    
 public:
-    HurtState(PlayerComponent* player_component) : PlayerState(player_component) {}
-    ~HurtState() override = default;
+    ClimbState(PlayerComponent* player_component) : PlayerState(player_component) {}
+    ~ClimbState() override = default;
 
 private:
     void enter() override;

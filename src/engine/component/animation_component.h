@@ -50,6 +50,8 @@ namespace engine::component
         void addAnimation(std::unique_ptr<engine::render::Animation> animation);    //向animations_添加动画
         void playAnimation(const std::string& name);        //根据动画名字播放动画
         void stopAnimation() { is_playing_ = false; }       //停止播放当前动画
+        void resumeAnimation() { is_playing_ = true; }   ///< @brief 恢复当前动画播放。
+
         // --- Getters and Setters ---
         std::string getCurrentAnimationName() const;
         bool isPlaying() const { return is_playing_; }
