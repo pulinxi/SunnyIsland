@@ -48,6 +48,15 @@ namespace game::component
         // --- 属性相关参数 ---
         float stunned_duration_ = 0.4f;     ///< @brief 玩家被击中后的硬直时间（单位：秒）
 
+        //土狼时间：允许玩家在离地后短暂时间内仍然可以跳跃
+        static constexpr float coyote_time_ = 0.1f;
+        float coyote_timer_ = 0.0f;     //土狼时间计时器
+
+        //无敌闪烁时间
+        static constexpr float flash_interval_ = 0.1f;
+        float flash_timer_ = 0.0f;     //无敌闪烁时间计时器
+
+
     public:
         PlayerComponent() = default;
         ~PlayerComponent() override = default;
@@ -83,6 +92,8 @@ namespace game::component
         float getStunnedDuration() const { return stunned_duration_; }       ///< @brief 获取硬直时间
 
         void setState(std::unique_ptr<state::PlayerState> new_state);       //设置新状态
+        bool is_on_ground() const;      //在考虑土狼时间的情况下判断玩家是否在地面上
+
 
     private:
         // 核心循环函数
