@@ -14,6 +14,7 @@
 #include "../../engine/input/input_manager.h"
 #include "../../engine/render/camera.h"
 #include "../../engine/render/animation.h"
+#include "../../engine/audio/audio_player.h"
 #include "../component/ai_component.h"
 #include "../component/ai/patrol_behavior.h"
 #include "../component/ai/updown_behavior.h"
@@ -51,6 +52,13 @@ namespace game::scene {
             context_.getInputManager().setShouldQuit(true);
             return;
         }
+
+        // 设置音量
+        context_.getAudioPlayer().setMusicVolume(0.2f);  // 设置背景音乐音量为20%
+        context_.getAudioPlayer().setSoundVolume(0.5f);  // 设置音效音量为50%
+        // 播放背景音乐 (循环，淡入1秒)
+        context_.getAudioPlayer().playMusic("assets/audio/hurry_up_and_run.ogg", true, 1000);
+
 
         Scene::init();
         spdlog::trace("GameScene 初始化完成。");
@@ -239,7 +247,10 @@ namespace game::scene {
                 enemy->setNeedRemove(true);     //让敌人标记为待删除状态
                 createEffect(enemy_center, enemy->getTag());   //创建（死亡特效）
             }
-            player->getComponent<engine::component::PhysicsComponent>()->velocity_.y = -300.0f;
+            // 玩家跳起效果
+            player->getComponent<engine::component::PhysicsComponent>()->velocity_.y = -300.0f;  // 向上跳起
+            // 播放音效 (此音效完全可以放在玩家的音频组件中，这里示例另一种用法：直接用AudioPlayer播放，传入文件路径)
+            context_.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
         }
         //踩踏失败，玩家受伤
         else
@@ -263,6 +274,7 @@ namespace game::scene {
         item->setNeedRemove(true);
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
         createEffect(item_aabb.position + item_aabb.size / 2.0f, item->getTag());//创建特效
+        context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");         // 播放音效
     }
 
     void GameScene::handleTileTriggers()
