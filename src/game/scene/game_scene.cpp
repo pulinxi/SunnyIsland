@@ -11,6 +11,7 @@
 #include "../../engine/component/health_component.h"
 #include "../../engine/physics/physics_engine.h"
 #include "../../engine/scene/level_loader.h"
+#include "../../engine/scene/scene_manager.h"
 #include "../../engine/input/input_manager.h"
 #include "../../engine/render/camera.h"
 #include "../../engine/render/animation.h"
@@ -86,7 +87,8 @@ namespace game::scene {
     {
         // 加载关卡（level_loader通常加载完成后即可销毁，因此不存为成员变量）
         engine::scene::LevelLoader level_loader;
-        if (!level_loader.loadLevel("assets/maps/level1.tmj", *this)) {
+        auto level_path = levelNameToPath(scene_name_);
+        if (!level_loader.loadLevel(level_path, *this)) {
             spdlog::error("关卡加载失败");
             return false;
         }
@@ -218,6 +220,15 @@ namespace game::scene {
                 obj2->getComponent<game::component::PlayerComponent>()->takeDamage(1);
                 spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj2->getName());
             }
+            // 处理玩家与关底触发器碰撞
+            else if (obj1->getName() == "player" && obj2->getTag() == "next_level")
+            {
+                toNextLevel(obj2);
+            }
+            else if (obj2->getName() == "player" && obj1->getTag() == "next_level")
+            {
+                toNextLevel(obj1);
+            }
         }
     }
 
@@ -292,6 +303,13 @@ namespace game::scene {
                 // TODO: 其他对象类型的处理，目前让敌人无视瓦片伤害
             }
         }
+    }
+
+    void GameScene::toNextLevel(engine::object::GameObject* trigger)
+    {
+        auto scene_name = trigger->getName();
+        auto next_scene = std::make_unique<game::scene::GameScene>(scene_name, context_, scene_manager_);
+        scene_manager_.requestReplaceScene(std::move(next_scene));
     }
 
     void GameScene::createEffect(const glm::vec2& center_pos, const std::string& tag)

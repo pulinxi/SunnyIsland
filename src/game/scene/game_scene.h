@@ -37,6 +37,10 @@ namespace game::scene {
         void PlayerVSItemCollision(engine::object::GameObject* player, engine::object::GameObject* item);  //玩家与物体的碰撞
         void handleTileTriggers();                  ///< @brief 处理瓦片触发事件（从PhysicsEngine获取信息）
 
+        void toNextLevel(engine::object::GameObject* trigger);          ///< @brief 进入下一个关卡
+
+        /// @brief 根据关卡名称获取对应的地图文件路径
+        std::string levelNameToPath(const std::string& level_name) const { return "assets/maps/" + level_name + ".tmj"; }
 
         /**
          *@brief Create a Effect object
