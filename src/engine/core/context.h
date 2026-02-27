@@ -7,6 +7,7 @@ namespace engine::input {
 namespace engine::render {
     class Renderer;
     class Camera;
+    class TextRenderer;
 }
 
 namespace engine::resource {
@@ -40,6 +41,7 @@ namespace engine::core
         engine::input::InputManager& input_manager_;            ///< @brief 输入管理器
         engine::render::Renderer& renderer_;                    ///< @brief 渲染器
         engine::render::Camera& camera_;                        ///< @brief 相机
+        engine::render::TextRenderer& text_renderer_;           ///< @brief 文本渲染器
         engine::resource::ResourceManager& resource_manager_;   ///< @brief 资源管理器
         engine::physics::PhysicsEngine& physics_engine_;        ///< @brief 物理引擎
         engine::audio::AudioPlayer& audio_player_;              ///< @brief 音频播放器
@@ -57,6 +59,7 @@ namespace engine::core
         Context(engine::input::InputManager& input_manager,
             engine::render::Renderer& renderer,
             engine::render::Camera& camera,
+            engine::render::TextRenderer& text_renderer,
             engine::resource::ResourceManager& resource_manager,
             engine::physics::PhysicsEngine& physics_engine,
             engine::audio::AudioPlayer& audio_player);
@@ -75,6 +78,7 @@ namespace engine::core
         engine::resource::ResourceManager& getResourceManager() const { return resource_manager_; } ///< @brief 获取资源管理器
         engine::physics::PhysicsEngine& getPhysicsEngine() const { return physics_engine_; }         ///< @brief 获取物理引擎
         engine::audio::AudioPlayer& getAudioPlayer() const { return audio_player_; }                 ///< @brief 获取音频播放器
+        engine::render::TextRenderer& getTextRenderer() const { return text_renderer_; }            ///< @brief 获取文本渲染器
 
 
 
