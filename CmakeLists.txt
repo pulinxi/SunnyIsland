@@ -73,6 +73,7 @@ add_executable(${TARGET}
                 src/game/component/state/climb_state.cpp
                 src/engine/audio/audio_player.cpp
                 src/engine/component/audio_component.cpp
+                src/game/data/session_data.cpp
                 )
 
 # 链接库

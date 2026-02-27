@@ -8,6 +8,10 @@ namespace engine::object {
     class GameObject;
 }
 
+namespace game::data {
+    class SessionData;
+}
+
 namespace game::scene {
 
     /**
@@ -15,10 +19,13 @@ namespace game::scene {
      */
     class GameScene final : public engine::scene::Scene {
 
+        std::shared_ptr<game::data::SessionData> game_session_data_;    ///< @brief 场景间共享数据，因此用shared_ptr
         engine::object::GameObject* player_ = nullptr;  ///< @brief 保存测试对象的指针，方便访问
 
     public:
-        GameScene(std::string name, engine::core::Context& context, engine::scene::SceneManager& scene_manager);
+        GameScene(engine::core::Context& context,
+            engine::scene::SceneManager& scene_manager,
+            std::shared_ptr<game::data::SessionData> data = nullptr);
 
         // 覆盖场景基类的核心方法
         void init() override;
@@ -34,6 +41,7 @@ namespace game::scene {
 
         void handleObjectCollisions();      //处理游戏对象间的逻辑碰撞
         void PlayerVSEnemyCollision(engine::object::GameObject* player, engine::object::GameObject* enemy); //玩家与敌人的碰撞
+        void handlePlayerDamage(int damage);         ///< @brief 处理玩家受伤（更新得分、UI等）
         void PlayerVSItemCollision(engine::object::GameObject* player, engine::object::GameObject* item);  //玩家与物体的碰撞
         void handleTileTriggers();                  ///< @brief 处理瓦片触发事件（从PhysicsEngine获取信息）
 
@@ -50,7 +58,8 @@ namespace game::scene {
          */
         void createEffect(const glm::vec2& center_pos, const std::string& tag);
 
-
+        // 测试函数
+        void testSaveAndLoad();
     };
 
 } // namespace game::scene
