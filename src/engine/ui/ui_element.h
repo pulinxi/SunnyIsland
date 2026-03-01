@@ -68,7 +68,7 @@ namespace engine::ui
 
         //辅助方法
         engine::utils::Rect getBounds() const;          //获取UI元素的边界
-        glm::vec2 getSCreenPosition() const;            //获取ui元素的屏幕坐标
+        glm::vec2 getScreenPosition() const;            //获取ui元素的屏幕坐标
         bool isPointInside(const glm::vec2& point) const;//检查给定的点是否在元素的内部
 
         // --- 禁用拷贝和移动语义 ---

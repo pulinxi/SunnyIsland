@@ -100,15 +100,15 @@ namespace engine::ui
 
     engine::utils::Rect UIElement::getBounds() const
     {
-        auto abs_pos = getSCreenPosition();
+        auto abs_pos = getScreenPosition();
         return engine::utils::Rect(abs_pos, size_);
     }
 
-    glm::vec2 UIElement::getSCreenPosition() const
+    glm::vec2 UIElement::getScreenPosition() const
     {
         if (parent_)
         {
-            return parent_->getSCreenPosition() + position_;
+            return parent_->getScreenPosition() + position_;
         }
         return position_;       //如果没有父节点则相对位置就是屏幕的绝对位置
     }
