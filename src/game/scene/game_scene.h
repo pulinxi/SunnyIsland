@@ -38,6 +38,7 @@ namespace game::scene {
         [[nodiscard]] bool initLevel();               ///< @brief 初始化关卡
         [[nodiscard]] bool initPlayer();              ///< @brief 初始化玩家
         [[nodiscard]] bool initEnemyAndItem();        ///< @brief 初始化敌人和道具
+        [[nodiscard]] bool initUI();                  ///< @brief 初始化UI
 
         void handleObjectCollisions();      //处理游戏对象间的逻辑碰撞
         void PlayerVSEnemyCollision(engine::object::GameObject* player, engine::object::GameObject* enemy); //玩家与敌人的碰撞
@@ -59,7 +60,7 @@ namespace game::scene {
         void createEffect(const glm::vec2& center_pos, const std::string& tag);
 
         // 测试函数
-        void testTextRenderer();
+        //void testTextRenderer();
     };
 
 } // namespace game::scene

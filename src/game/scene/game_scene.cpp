@@ -17,13 +17,15 @@
 #include "../../engine/render/animation.h"
 #include "../../engine/render/text_renderer.h"
 #include "../../engine/audio/audio_player.h"
+#include "../../engine/ui/ui_manager.h"
+#include "../../engine/ui/ui_panel.h"
+#include "../../engine/utils/math.h"
 #include "../component/ai_component.h"
 #include "../component/ai/patrol_behavior.h"
 #include "../component/ai/updown_behavior.h"
 #include "../component/ai/jump_behavior.h"
 #include "../data/session_data.h"
 #include <spdlog/spdlog.h>
-#include <SDL3/SDL_rect.h>
 
 namespace game::scene {
 
@@ -58,6 +60,11 @@ namespace game::scene {
         }
         if (!initEnemyAndItem()) {
             spdlog::error("敌人和道具初始化失败，无法继续。");
+            context_.getInputManager().setShouldQuit(true);
+            return;
+        }
+        if (!initUI()) {
+            spdlog::error("UI初始化失败，无法继续。");
             context_.getInputManager().setShouldQuit(true);
             return;
         }
@@ -190,6 +197,17 @@ namespace game::scene {
             }
         }
         return success;
+    }
+
+    bool GameScene::initUI()
+    {
+        if (!ui_manager_->init(glm::vec2(640.0f, 360.0f))) return false;
+
+        // 创建一个透明的方形UIPanel
+        ui_manager_->addElement(std::make_unique<engine::ui::UIPanel>(glm::vec2(100.0f, 100.0f),
+            glm::vec2(200.0f, 200.0f),
+            engine::utils::FColor{ 0.5f, 0.0f, 0.0f, 0.3f }));
+        return true;
     }
 
     void GameScene::handleObjectCollisions()
@@ -377,14 +395,14 @@ namespace game::scene {
         spdlog::debug("创建特效: {}", tag);
     }
 
-    void GameScene::testTextRenderer()
-    {
-        auto& text_renderer = context_.getTextRenderer();
-        const auto& camera = context_.getCamera();
-        // UI和地图各渲染一次，测试是否正常
-        text_renderer.drawUIText("UI Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(100.0f), { 0, 1.0f, 0, 1.0f });
-        text_renderer.drawText(camera, "Map Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(200.0f));
-    }
+    // void GameScene::testTextRenderer()
+    // {
+    //     auto& text_renderer = context_.getTextRenderer();
+    //     const auto& camera = context_.getCamera();
+    //     // UI和地图各渲染一次，测试是否正常
+    //     text_renderer.drawUIText("UI Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(100.0f), { 0, 1.0f, 0, 1.0f });
+    //     text_renderer.drawText(camera, "Map Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32, glm::vec2(200.0f));
+    // }
 
 
 } // namespace game::scene 

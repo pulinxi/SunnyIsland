@@ -8,15 +8,9 @@ namespace  engine::core
     class Context;
 }
 
-namespace engine::render
+namespace engine::ui
 {
-    class Renderer;
-    class Camera;
-}
-
-namespace engine::input
-{
-    class InputManager;
+    class UIManager;
 }
 
 namespace engine::object
@@ -45,6 +39,7 @@ namespace engine::scene
         bool is_initialized_ = false;           //场景是否已经初始化
         std::vector<std::unique_ptr<engine::object::GameObject>> game_objects_;     //存放当前场景的所有游戏对象
         std::vector<std::unique_ptr<engine::object::GameObject>> pending_additions_;     //存放当前场景需要添加的的所有游戏对象
+        std::unique_ptr<engine::ui::UIManager> ui_manager_; ///< @brief UI管理器(初始化时自动创建)
 
 
     public:
