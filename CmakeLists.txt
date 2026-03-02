@@ -85,6 +85,8 @@ add_executable(${TARGET}
                 src/engine/ui/state/ui_hover_state.cpp
                 src/engine/ui/ui_interactive.cpp
                 src/engine/ui/ui_button.cpp
+                src/game/scene/title_scene.cpp
+                src/game/scene/helps_scene.cpp
                 )
 
 # 链接库

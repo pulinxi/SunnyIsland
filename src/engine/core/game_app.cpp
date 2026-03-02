@@ -13,7 +13,7 @@
 // #include "../component/transform_component.h"
 // #include "../component/sprite_component.h"
 #include "../scene/scene_manager.h"
-#include "../../game/scene/game_scene.h"
+#include "../../game/scene/title_scene.h"
 #include "context.h"
 #include "config.h"
 
@@ -67,7 +67,7 @@ namespace engine::core {
         if (!initSceneManager()) return false;
 
         // 创建第一个场景并压入栈
-        auto scene = std::make_unique<game::scene::GameScene>(*context_, *scene_manager_);
+        auto scene = std::make_unique<game::scene::TitleScene>(*context_, *scene_manager_);
         scene_manager_->requestPushScene(std::move(scene));
 
         is_running_ = true;
