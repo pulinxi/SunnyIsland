@@ -25,7 +25,7 @@ namespace engine::audio {
 
 namespace engine::core
 {
-
+    class GameState;
 
 
     /**
@@ -45,6 +45,7 @@ namespace engine::core
         engine::resource::ResourceManager& resource_manager_;   ///< @brief 资源管理器
         engine::physics::PhysicsEngine& physics_engine_;        ///< @brief 物理引擎
         engine::audio::AudioPlayer& audio_player_;              ///< @brief 音频播放器
+        engine::core::GameState& game_state_;                   ///< @brief 游戏状态
 
 
     public:
@@ -62,7 +63,8 @@ namespace engine::core
             engine::render::TextRenderer& text_renderer,
             engine::resource::ResourceManager& resource_manager,
             engine::physics::PhysicsEngine& physics_engine,
-            engine::audio::AudioPlayer& audio_player);
+            engine::audio::AudioPlayer& audio_player,
+            engine::core::GameState& game_state);
 
 
         // 禁止拷贝和移动，Context 对象通常是唯一的或按需创建/传递
@@ -79,6 +81,7 @@ namespace engine::core
         engine::physics::PhysicsEngine& getPhysicsEngine() const { return physics_engine_; }         ///< @brief 获取物理引擎
         engine::audio::AudioPlayer& getAudioPlayer() const { return audio_player_; }                 ///< @brief 获取音频播放器
         engine::render::TextRenderer& getTextRenderer() const { return text_renderer_; }            ///< @brief 获取文本渲染器
+        engine::core::GameState& getGameState() const { return game_state_; }                         ///< @brief 获取游戏状态
 
 
 

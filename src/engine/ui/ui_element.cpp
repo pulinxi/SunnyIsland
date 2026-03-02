@@ -22,7 +22,8 @@ namespace engine::ui
         {
             if (*it && !(*it)->isNeedRemove())
             {
-                if ((*it)->handleInput(context)) return true;
+                if ((*it)->handleInput(context))
+                    return true;
                 ++it;
             }
             else

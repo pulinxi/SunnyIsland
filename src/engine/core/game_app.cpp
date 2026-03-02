@@ -2,6 +2,7 @@
 #include "time.h"
 #include <SDL3/SDL.h>
 #include <spdlog/spdlog.h>
+#include "game_state.h"
 #include "../resource/resource_manager.h"
 #include "../audio/audio_player.h"
 #include "../render/renderer.h"
@@ -62,6 +63,7 @@ namespace engine::core {
         if (!initTextRenderer()) return false;
         if (!initInputManager()) return false;
         if (!initPhysicsEngine()) return false;
+        if (!initGameState()) return false;
 
         if (!initContext()) return false;
         if (!initSceneManager()) return false;
@@ -199,6 +201,18 @@ namespace engine::core {
         return true;
     }
 
+    bool GameApp::initGameState()
+    {
+        try {
+            game_state_ = std::make_unique<engine::core::GameState>(window_, sdl_renderer_);
+        }
+        catch (const std::exception& e) {
+            spdlog::error("初始化游戏状态失败: {}", e.what());
+            return false;
+        }
+        return true;
+    }
+
     bool GameApp::initRenderer() {
         try {
             renderer_ = std::make_unique<engine::render::Renderer>(sdl_renderer_, resource_manager_.get());
@@ -258,7 +272,8 @@ namespace engine::core {
                 *text_renderer_,
                 *resource_manager_,
                 *physics_engine_,
-                *audio_player_);
+                *audio_player_,
+                *game_state_);
         }
         catch (const std::exception& e) {
             spdlog::error("初始化上下文失败: {}", e.what());

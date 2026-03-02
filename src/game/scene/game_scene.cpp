@@ -1,6 +1,8 @@
 #include "game_scene.h"
+#include "menu_scene.h"
 #include "../component/player_component.h"
 #include "../../engine/core/context.h"
+#include "../../engine/core/game_state.h"
 #include "../../engine/object/game_object.h"
 #include "../../engine/component/transform_component.h"
 #include "../../engine/component/sprite_component.h"
@@ -50,6 +52,7 @@ namespace game::scene {
             return;
         }
         spdlog::trace("GameScene 初始化开始...");
+        context_.getGameState().setState(engine::core::State::Playing);
 
         if (!initLevel()) {
             spdlog::error("关卡初始化失败，无法继续。");
@@ -92,6 +95,11 @@ namespace game::scene {
 
     void GameScene::handleInput() {
         Scene::handleInput();
+        //检测暂停动作
+        if (context_.getInputManager().isActionPressed("pause")) {
+            spdlog::debug("在GameScene中检测到暂停动作，正在推送MenuScene。");
+            scene_manager_.requestPushScene(std::make_unique<MenuScene>(context_, scene_manager_, game_session_data_));
+        }
     }
 
     void GameScene::clean() {
@@ -201,7 +209,7 @@ namespace game::scene {
 
     bool GameScene::initUI()
     {
-        if (!ui_manager_->init(glm::vec2(640.0f, 360.0f))) return false;
+        if (!ui_manager_->init(context_.getGameState().getLogicalSize())) return false;
 
         createScoreUI();
         createHealthUI();

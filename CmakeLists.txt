@@ -87,6 +87,8 @@ add_executable(${TARGET}
                 src/engine/ui/ui_button.cpp
                 src/game/scene/title_scene.cpp
                 src/game/scene/helps_scene.cpp
+                src/engine/core/game_state.cpp
+                src/game/scene/menu_scene.cpp
                 )
 
 # 链接库

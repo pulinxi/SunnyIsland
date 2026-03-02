@@ -39,6 +39,8 @@ namespace engine::core {        // 命名空间的最佳实践：与文件路径
     class Time;
     class Config;
     class Context;
+    class GameState;
+
 
     /**
      * @brief 主游戏应用程序类，初始化SDL，管理游戏循环。
@@ -61,6 +63,7 @@ namespace engine::core {        // 命名空间的最佳实践：与文件路径
         std::unique_ptr<engine::scene::SceneManager> scene_manager_;
         std::unique_ptr<engine::physics::PhysicsEngine> physics_engine_;
         std::unique_ptr<engine::audio::AudioPlayer> audio_player_;
+        std::unique_ptr<engine::core::GameState> game_state_;
 
     public:
         GameApp();
@@ -98,6 +101,8 @@ namespace engine::core {        // 命名空间的最佳实践：与文件路径
         [[nodiscard]] bool initSceneManager();
         [[nodiscard]] bool initPhysicsEngine();
         [[nodiscard]] bool initAudioPlayer();
+        [[nodiscard]] bool initGameState();
+
 
 
 
