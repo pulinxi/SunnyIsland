@@ -45,6 +45,11 @@ namespace game::scene
             spdlog::error("加载背景失败");
             return;
         }
+        session_data_->syncHighScore("assets/save.json");      // 更新最高分
+
+        // 重置相机坐标，不限制边界
+        context_.getCamera().setPosition(glm::vec2(0.0f, 0.0f));
+        context_.getCamera().setLimitBounds(std::nullopt);  // 若无这一行，从GameScene返回到标题场景时，相机会限制在地图边界内
 
         //创建ui元素
         createUI();
@@ -206,6 +211,7 @@ namespace game::scene
 
     void TitleScene::onQuitClick() {
         spdlog::debug("退出按钮被点击。");
+        session_data_->syncHighScore("assets/save.json");   // 退出前先同步最高分
         context_.getInputManager().setShouldQuit(true);
     }
 }

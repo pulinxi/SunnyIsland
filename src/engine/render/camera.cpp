@@ -50,7 +50,7 @@ namespace engine::render {
         clampPosition();
     }
 
-    void Camera::setLimitBounds(const engine::utils::Rect& bounds)
+    void Camera::setLimitBounds(std::optional<engine::utils::Rect> bounds)
     {
         limit_bounds_ = bounds;
         clampPosition(); // 设置边界后，立即应用限制
