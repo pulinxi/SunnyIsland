@@ -86,8 +86,6 @@ namespace engine::object
             spdlog::debug("成功添加component:{} {}", name_, typeid(T).name());
             return ptr;
 
-
-
         }
 
 

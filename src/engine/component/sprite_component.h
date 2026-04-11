@@ -32,7 +32,7 @@ namespace engine::component
 
     private:
         engine::resource::ResourceManager* resource_manager_ = nullptr;     //资源管理器
-        TransformComponent* transform_ = nullptr;
+        TransformComponent* transform_ = nullptr;               //不是必须的，因为精灵组件和变换组件需要频繁交互所以直接存储指针可以提升运行速度
 
         engine::render::Sprite sprite_;                //精灵图指针
         engine::utils::Alignment alignment_ = engine::utils::Alignment::NONE;       //对其方式

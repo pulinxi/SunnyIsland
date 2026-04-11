@@ -31,7 +31,7 @@ namespace engine::input
         {
             if (state == ActionState::PRESSED_THIS_FRAME)       //上一帧如果处于按下状态，这一帧又还没开始检测是否按下，那这一阵就是处于一直按下的状态
             {
-                state = ActionState::HELD_DOWN;
+                state = ActionState::HELD_DOWN;                 //这是因为当某个键被一直按下的时候，是不会生成SDL_Event的
             }
             else if (state == ActionState::RELEASED_THIS_FRAME)     //同理上一帧释放那这一帧就是空闲状态
             {

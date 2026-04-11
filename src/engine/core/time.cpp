@@ -1,6 +1,7 @@
 #include "time.h"
 #include <spdlog/spdlog.h>
 #include <SDL3/SDL_timer.h>    // 用于 SDL_GetTicksNS()
+#include <algorithm>
 
 namespace engine::core {
 
@@ -33,6 +34,11 @@ namespace engine::core {
             SDL_DelayNS(ns_to_wait);
             delta_time_ = static_cast<double>(SDL_GetTicksNS() - last_time_) / 1000000000.0;
         }
+        else
+        {
+            delta_time_ = std::min(static_cast<double>(current_delta_time), 0.1);       //由于帧率过低（delta_time_太大）可能会导致穿模，所以要对帧率进行限制，让他最低10帧每秒
+        }
+
     }
 
     float Time::getDeltaTime() const {

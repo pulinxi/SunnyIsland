@@ -1,7 +1,7 @@
 {
     "high_score": 65,
-    "level_health": 1,
+    "level_health": 3,
     "level_score": 25,
-    "map_path": "assets/maps/level2.tmj",
+    "map_path": "assets/maps/level1.tmj",
     "max_health": 3
 }

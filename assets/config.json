@@ -37,12 +37,16 @@
             "Escape"
         ],
         "attack": [
-            "K",
+            "L",
             "MouseLeft"
         ],
         "jump": [
-            "J",
+            "K",
             "Space"
+        ],
+        "dash": [
+            "L",
+            "L"
         ]
     }
 }

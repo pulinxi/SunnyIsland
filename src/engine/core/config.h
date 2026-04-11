@@ -43,9 +43,10 @@ namespace engine::core
             {"move_right", {"D","Right"}},
             {"move_up", {"W","Up"}},
             {"move_down", {"S","Down"}},
-            {"jump", {"J","Space"}},
-            {"attack", {"K","MouseLeft"}},
+            {"jump", {"K","Space"}},
+            {"attack", {"J","MouseLeft"}},
             {"pause", {"P","Escape"}},
+            {"dash", {"L","L"}},
             //也可以继续添加其他动作
         };
 

@@ -40,7 +40,7 @@ namespace game::data
         level_health_ = 3;
         level_score_ = 0;
         is_win_ = false;
-        map_path_ = "assets/maps/level1.tmj";
+        map_path_ = "assets/maps/level3.tmj";
         spdlog::info("SessionData reset.");
     }
 
