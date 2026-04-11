@@ -90,6 +90,7 @@ add_executable(${TARGET}
                 src/engine/core/game_state.cpp
                 src/game/scene/menu_scene.cpp
                 src/game/scene/end_scene.cpp
+                src/game/component/state/dash_state.cpp
                 )
 
 # 链接库

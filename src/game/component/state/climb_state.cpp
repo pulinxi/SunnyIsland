@@ -3,6 +3,7 @@
 #include "idle_state.h"
 #include "walk_state.h"
 #include "fall_state.h"
+#include "dash_state.h"
 #include "../player_component.h"
 #include "../../../engine/core/context.h"
 #include "../../../engine/input/input_manager.h"
@@ -39,6 +40,28 @@ namespace game::component::state
         auto physics_component = player_component_->getPhysicsComponent();
         auto animation_component = player_component_->getAnimationComponent();
 
+        // 如果按下冲刺键
+        if (input_manager.isActionPressed("dash") && player_component_->getDashCount() > 0)
+        {
+            if (input_manager.isActionDown("move_left"))
+            {
+                player_component_->setDashDirection({ -1.0f, player_component_->getDashDirection().y });
+            }
+            else if (input_manager.isActionDown("move_right"))
+            {
+                player_component_->setDashDirection({ 1.0f, player_component_->getDashDirection().y });
+            }
+            if (input_manager.isActionDown("move_up"))
+            {
+                player_component_->setDashDirection({ player_component_->getDashDirection().x, -1.0f });
+            }
+            else if (input_manager.isActionDown("move_down"))
+            {
+                player_component_->setDashDirection({ player_component_->getDashDirection().x, 1.0f });
+            }
+            return std::make_unique<DashState>(player_component_);
+        }
+
         //攀爬状态下，按键就移动，不按就静止
         auto is_up = input_manager.isActionDown("move_up");
         auto is_down = input_manager.isActionDown("move_down");
@@ -64,6 +87,8 @@ namespace game::component::state
     std::unique_ptr<PlayerState> ClimbState::update(float delta_time, engine::core::Context&)
     {
         auto physics_component = player_component_->getPhysicsComponent();
+        player_component_->setDashCount(player_component_->getDashTimes()); //重置冲刺次数
+
         // 如果着地，则切换到 IdleState
         if (physics_component->hasCollidedBelow()) {
             return std::make_unique<IdleState>(player_component_);

@@ -3,6 +3,7 @@
 #include "fall_state.h"
 #include "idle_state.h"
 #include "climb_state.h"
+#include "dash_state.h"
 #include "../player_component.h"
 #include "../../../engine/core/context.h"
 #include "../../../engine/input/input_manager.h"
@@ -38,6 +39,28 @@ namespace game::component::state {
             return std::make_unique<JumpState>(player_component_);
         }
 
+        // 如果按下冲刺键
+        if (input_manager.isActionPressed("dash") && player_component_->getDashCount() > 0)
+        {
+            if (input_manager.isActionDown("move_left"))
+            {
+                player_component_->setDashDirection({ -1.0f, player_component_->getDashDirection().y });
+            }
+            else if (input_manager.isActionDown("move_right"))
+            {
+                player_component_->setDashDirection({ 1.0f, player_component_->getDashDirection().y });
+            }
+            if (input_manager.isActionDown("move_up"))
+            {
+                player_component_->setDashDirection({ player_component_->getDashDirection().x, -1.0f });
+            }
+            else if (input_manager.isActionDown("move_down"))
+            {
+                player_component_->setDashDirection({ player_component_->getDashDirection().x, 1.0f });
+            }
+            return std::make_unique<DashState>(player_component_);
+        }
+
         // 步行状态可以左右移动
         if (input_manager.isActionDown("move_left")) {
             if (physics_component->velocity_.x > 0.0f) {
@@ -69,9 +92,14 @@ namespace game::component::state {
         auto max_speed = player_component_->getMaxSpeed();
         physics_component->velocity_.x = glm::clamp(physics_component->velocity_.x, -max_speed, max_speed);
 
+
         // 如果离地，则切换到 FallState
         if (!player_component_->is_on_ground()) {
             return std::make_unique<FallState>(player_component_);
+        }
+        else
+        {
+            player_component_->setDashCount(player_component_->getDashTimes()); // 重置冲刺次数
         }
 
         return nullptr;

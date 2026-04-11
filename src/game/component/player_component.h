@@ -1,6 +1,7 @@
 #pragma once
 #include "../../engine/component/component.h"
 #include "state/player_state.h"
+#include <glm/vec2.hpp>
 #include <memory>
 
 namespace engine::input {
@@ -46,6 +47,8 @@ namespace game::component
         float friction_factor_ = 0.85f;       //摩擦系数(Idle时缓冲效果，每帧乘以此系数)
         float jump_vel_ = 350.0f;           //跳跃力（按下跳跃键是给的瞬间向上的速度）
         float climb_speed_ = 100.0f;          //攀爬的速度
+        glm::vec2 dash_direction_ = glm::vec2(0.0f, 0.0f); //冲刺方向
+
 
         // --- 属性相关参数 ---
         float stunned_duration_ = 0.4f;     ///< @brief 玩家被击中后的硬直时间（单位：秒）
@@ -57,6 +60,14 @@ namespace game::component
         //无敌闪烁时间
         static constexpr float flash_interval_ = 0.1f;
         float flash_timer_ = 0.0f;     //无敌闪烁时间计时器
+
+        //冲刺
+        float dash_speed_ = 250.0f;         //冲刺速度
+        glm::vec2 dash_speed_total_ = glm::vec2(0.0f, 0.0f); //冲刺速度（总）
+        float dash_interval_ = 0.3f;        //冲刺时间
+        float dash_timer_ = 0.0f;           //冲刺时间计时器
+        int dash_times_ = 2;                //冲刺次数
+        int dash_count_ = 0;                //当前冲刺次数
 
 
     public:
@@ -93,9 +104,24 @@ namespace game::component
         float getJumpVelocity() const { return jump_vel_; }                 ///< @brief 获取跳跃速度
         void setStunnedDuration(float duration) { stunned_duration_ = duration; }  ///< @brief 设置硬直时间
         float getStunnedDuration() const { return stunned_duration_; }       ///< @brief 获取硬直时间
+        void setDashSpeed(float dash_speed) { dash_speed_ = dash_speed; }       ///< @brief 设置冲刺速度
+        float getDashSpeed() const { return dash_speed_; }                    ///< @brief 获取冲刺速度
+        void setDashInterval(float interval) { dash_interval_ = interval; }       ///< @brief 设置冲刺间隔
+        float getDashInterval() const { return dash_interval_; }               ///< @brief 获取冲刺间隔
+        void setDashTimes(int dash_times) { dash_times_ = dash_times; }       ///< @brief 设置冲刺次数
+        int getDashTimes() const { return dash_times_; }                    ///< @brief 获取冲刺次数
+        void setDashCount(int dash_count) { dash_count_ = dash_count; }       ///< @brief 设置冲刺次数
+        int getDashCount() const { return dash_count_; }                    ///< @brief 获取冲刺次数
+        void setDashTimer(float dash_timer) { dash_timer_ = dash_timer; }       ///< @brief 设置冲刺计时器
+        float getDashTimer() const { return dash_timer_; }               ///< @brief 获取冲刺计时器
+        void setDashDirection(glm::vec2 dash_direction) { dash_direction_ = dash_direction; }       ///< @brief 设置冲刺方向
+        glm::vec2 getDashDirection() const { return dash_direction_; }               ///< @brief 获取冲刺方向
+        void setDashSpeedTotal(glm::vec2 dash_speed_total) { dash_speed_total_ = dash_speed_total; }       ///< @brief 设置冲刺速度
+        glm::vec2 getDashSpeedTotal() const { return dash_speed_total_; }               ///< @brief 获取冲刺速度
 
         void setState(std::unique_ptr<state::PlayerState> new_state);       //设置新状态
         bool is_on_ground() const;      //在考虑土狼时间的情况下判断玩家是否在地面上
+        void resetDashDirection() { dash_direction_ = { 0.0f,0.0f }; }     //重置冲刺方向
 
 
     private:
