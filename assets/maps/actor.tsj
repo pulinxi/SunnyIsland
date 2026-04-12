@@ -107,7 +107,7 @@
                 {
                  "name":"sound",
                  "type":"string",
-                 "value":"{\n  \"jump\":\"assets\/audio\/cartoon-jump-6462.mp3\",\n  \"hurt\":\"assets\/audio\/monster.mp3\",\n  \"dead\":\"assets\/audio\/dead-8bit-41400.mp3\"\n}"
+                 "value":"{\n  \"jump\":\"assets\/audio\/cartoon-jump-6462.mp3\",\n  \"hurt\":\"assets\/audio\/monster.mp3\",\n  \"dead\":\"assets\/audio\/dead-8bit-41400.mp3\",\n  \"dash\":\"assets\/audio\/dash.mp3\"\n}"
                 }, 
                 {
                  "name":"tag",

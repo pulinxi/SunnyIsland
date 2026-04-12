@@ -14,6 +14,13 @@ GameObject::GameObject(const std::string &name, const std::string &tag): name_(n
     spdlog::trace("GameObject created: {} {}", name_, tag_);
 }
 
+void GameObject::resetComponent(engine::core::Context& context)
+{
+    for (auto& pair : components_) {
+        pair.second->reset(context);
+    }
+}
+
 void GameObject::update(float delta_time, engine::core::Context& context) {
     // 遍历所有组件并调用它们的 update 方法
     for (auto& pair : components_) {

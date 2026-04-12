@@ -62,9 +62,9 @@ namespace game::component
         float flash_timer_ = 0.0f;     //无敌闪烁时间计时器
 
         //冲刺
-        float dash_speed_ = 250.0f;         //冲刺速度
+        float dash_speed_ = 400.0f;         //冲刺速度
         glm::vec2 dash_speed_total_ = glm::vec2(0.0f, 0.0f); //冲刺速度（总）
-        float dash_interval_ = 0.3f;        //冲刺时间
+        float dash_interval_ = 0.2f;        //冲刺时间
         float dash_timer_ = 0.0f;           //冲刺时间计时器
         int dash_times_ = 2;                //冲刺次数
         int dash_count_ = 0;                //当前冲刺次数

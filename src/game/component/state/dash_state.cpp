@@ -3,6 +3,7 @@
 #include <math.h>
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/sprite_component.h"
+#include "../../../engine/component/audio_component.h"
 #include "../player_component.h"
 #include "idle_state.h"
 
@@ -11,6 +12,9 @@ namespace game::component::state
     void DashState::enter()
     {
         playAnimation("jump");
+        if (auto* audio_component = player_component_->getAudioComponent(); audio_component) {
+            audio_component->playSound("dash");  // 播放跳跃音效
+        }
 
         auto* physics_component = player_component_->getPhysicsComponent();
         float dash_speed = player_component_->getDashSpeed();

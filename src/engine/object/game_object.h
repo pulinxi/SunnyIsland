@@ -46,6 +46,7 @@ namespace engine::object
         const std::string& getTag() const { return tag_; }                      ///< @brief 获取标签
         void setNeedRemove(bool need_remove) { need_remove_ = need_remove; }    ///< @brief 设置是否需要删除
         bool isNeedRemove() const { return need_remove_; }                      ///< @brief 获取是否需要删除
+        void resetComponent(engine::core::Context& context);
 
 
         /**

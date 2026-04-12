@@ -4,7 +4,6 @@
 #include "../component/player_component.h"
 #include "../../engine/core/context.h"
 #include "../../engine/core/game_state.h"
-#include "../../engine/object/game_object.h"
 #include "../../engine/component/transform_component.h"
 #include "../../engine/component/sprite_component.h"
 #include "../../engine/component/physics_component.h"
@@ -48,6 +47,8 @@ namespace game::scene {
         spdlog::trace("GameScene 构造完成。");
     }
 
+    GameScene::~GameScene() = default;
+
     void GameScene::init() {
         if (is_initialized_) {
             spdlog::warn("GameScene 已经初始化过了，重复调用 init()。");
@@ -77,6 +78,12 @@ namespace game::scene {
             context_.getInputManager().setShouldQuit(true);
             return;
         }
+        if (!initEffectPool(20))
+        {
+            spdlog::error("对象池初始化失败，无法继续。");
+            context_.getInputManager().setShouldQuit(true);
+            return;
+        }
 
         // 播放背景音乐 (循环，淡入1秒)
         context_.getAudioPlayer().playMusic("assets/audio/hurry_up_and_run.ogg", true, 1000);
@@ -90,6 +97,23 @@ namespace game::scene {
         Scene::update(delta_time);
         handleObjectCollisions();
         handleTileTriggers();
+
+        for (auto it = effects.begin();it != effects.end();)
+        {
+            if ((*it)->isNeedRemove())
+            {
+                effect_pool_->releaseObject(std::move(*it), context_);
+                it = effects.erase(it);
+            }
+            else
+            {
+                (*it)->update(delta_time, context_);
+                it++;
+            }
+        }
+
+        processPendingEffect();
+
 
         //玩家调出地图下方判断为失败
         if (player_)
@@ -108,6 +132,20 @@ namespace game::scene {
 
     void GameScene::render() {
         Scene::render();
+
+        for (auto it = effects.begin();it != effects.end();)
+        {
+            if ((*it)->isNeedRemove())
+            {
+                effect_pool_->releaseObject(std::move(*it), context_);
+                it = effects.erase(it);
+            }
+            else
+            {
+                (*it)->render(context_);
+                it++;
+            }
+        }
     }
 
     void GameScene::handleInput() {
@@ -116,6 +154,25 @@ namespace game::scene {
         if (context_.getInputManager().isActionPressed("pause")) {
             spdlog::debug("在GameScene中检测到暂停动作，正在推送MenuScene。");
             scene_manager_.requestPushScene(std::make_unique<MenuScene>(context_, scene_manager_, game_session_data_));
+        }
+        if (context_.getInputManager().isActionPressed("attack")) {
+            spdlog::debug("从对象池中创建特效");
+            context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");         // 播放音效
+            createEffectwithPool(context_.getInputManager().getLogicalMousePosition());
+        }
+
+        for (auto it = effects.begin();it != effects.end();)
+        {
+            if ((*it)->isNeedRemove())
+            {
+                effect_pool_->releaseObject(std::move(*it), context_);
+                it = effects.erase(it);
+            }
+            else
+            {
+                (*it)->handleInput(context_);
+                it++;
+            }
         }
     }
 
@@ -241,6 +298,38 @@ namespace game::scene {
         createScoreUI();
         createHealthUI();
 
+        return true;
+    }
+
+    bool GameScene::initEffectPool(int nums)
+    {
+        effect_pool_ = std::make_unique<engine::pool::ObjectPool<engine::object::GameObject>>();
+        for (int i = 0;i < nums;i++)
+        {
+            auto effect_obj = std::make_unique<engine::object::GameObject>("effect_item");
+            effect_obj->addComponent<engine::component::TransformComponent>(glm::vec2(0.0f, 0.0f));
+
+            // --- 根据标签创建不同的精灵组件和动画--- 
+            auto animation = std::make_unique<engine::render::Animation>("effect", false);
+
+            effect_obj->addComponent<engine::component::SpriteComponent>("assets/textures/FX/item-feedback.png",
+                context_.getResourceManager(),
+                engine::utils::Alignment::CENTER);
+            for (auto j = 0; j < 4; ++j) {
+                animation->addFrame({ static_cast<float>(j * 32), 0.0f, 32.0f, 32.0f }, 0.1f);
+            }
+            // --- 根据创建的动画，添加动画组件，并设置为单次播放 ---
+            auto* animation_component = effect_obj->addComponent<engine::component::AnimationComponent>();
+            animation_component->addAnimation(std::move(animation));
+            animation_component->setOneShotRemoval(true);
+            animation_component->playAnimation("effect");
+            if (!effect_pool_->addObject(std::move(effect_obj)))
+            {
+                spdlog::error("对象池的第{}个对象添加失败", i);
+                return false;
+            }
+        }
+        spdlog::debug("创建特效池: item");
         return true;
     }
 
@@ -443,6 +532,24 @@ namespace game::scene {
         animation_component->playAnimation("effect");
         safeAddGameObject(std::move(effect_obj));  // 安全添加特效对象
         spdlog::debug("创建特效: {}", tag);
+    }
+
+    void GameScene::createEffectwithPool(const glm::vec2& center_pos)
+    {
+        auto temp = std::move(effect_pool_->getObject());
+        temp->getComponent < engine::component::TransformComponent>()->setPosition(
+            player_->getComponent<engine::component::TransformComponent>()->getPosition() + glm::vec2(50.0f, 20.0f));
+        pending_effects.push_back(std::move(temp));
+    }
+
+    void GameScene::processPendingEffect()
+    {
+        for (auto& effect : pending_effects)
+        {
+            effects.push_back(std::move(effect));
+        }
+
+        pending_effects.clear();
     }
 
     void GameScene::createScoreUI()

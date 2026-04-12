@@ -62,5 +62,6 @@ namespace engine::component
     protected:
         void init() override;
         void update(float, engine::core::Context&) override;
+        void reset(engine::core::Context&) override;
     };
 }

@@ -2,12 +2,10 @@
 #include "../../engine/scene/scene.h"
 #include <memory>
 #include <glm/vec2.hpp>
+#include "../../engine/pool/objectpool.h"
+#include "../../engine/object/game_object.h"
 
 // 前置声明
-namespace engine::object {
-    class GameObject;
-}
-
 namespace game::data {
     class SessionData;
 }
@@ -30,10 +28,16 @@ namespace game::scene {
         engine::ui::UILabel* score_label_ = nullptr;        ///< @brief 得分标签 (生命周期由UIManager管理，因此使用裸指针)
         engine::ui::UIPanel* health_panel_ = nullptr;       ///< @brief 生命值图标面板
 
+        std::unique_ptr<engine::pool::ObjectPool<engine::object::GameObject>> effect_pool_;     //对象池
+        std::vector<std::unique_ptr<engine::object::GameObject>> effects;                       //存储从对象池中取出的特效
+        std::vector<std::unique_ptr<engine::object::GameObject>> pending_effects;               //存储需要加入的特效
+
     public:
         GameScene(engine::core::Context& context,
             engine::scene::SceneManager& scene_manager,
             std::shared_ptr<game::data::SessionData> data = nullptr);
+
+        ~GameScene();
 
         // 覆盖场景基类的核心方法
         void init() override;
@@ -47,6 +51,7 @@ namespace game::scene {
         [[nodiscard]] bool initPlayer();              ///< @brief 初始化玩家
         [[nodiscard]] bool initEnemyAndItem();        ///< @brief 初始化敌人和道具
         [[nodiscard]] bool initUI();                  ///< @brief 初始化UI
+        [[nodiscard]] bool initEffectPool(int nums);          ///初始化特效对象池,nums为对象池对象个数
 
         void handleObjectCollisions();      //处理游戏对象间的逻辑碰撞
         void PlayerVSEnemyCollision(engine::object::GameObject* player, engine::object::GameObject* enemy); //玩家与敌人的碰撞
@@ -67,6 +72,19 @@ namespace game::scene {
          * @param tag 特效标签
          */
         void createEffect(const glm::vec2& center_pos, const std::string& tag);
+
+        /**
+         *@brief 从特效池取出对象
+         *
+         * @param center_pos 特效位置
+         */
+        void createEffectwithPool(const glm::vec2& center_pos);
+
+        /**
+         *@brief 把需要加入的特效加入特效容器中
+         *
+         */
+        void processPendingEffect();
 
 
         // --- UI 相关函数 ---

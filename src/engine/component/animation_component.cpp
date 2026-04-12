@@ -50,6 +50,13 @@ namespace engine::component
         }
     }
 
+    void AnimationComponent::reset(engine::core::Context& context)
+    {
+        animation_timer_ = 0.0f;
+        is_playing_ = true;
+        owner_->setNeedRemove(false);
+    }
+
     void AnimationComponent::addAnimation(std::unique_ptr<engine::render::Animation> animation)
     {
         if (!animation) return;

@@ -53,6 +53,7 @@ namespace engine::component
         virtual void update(float, engine::core::Context&) = 0;               ///< @brief 更新
         virtual void render(engine::core::Context&) {}                    ///< @brief 渲染
         virtual void clean() {}                     ///< @brief 清理
+        virtual void reset(engine::core::Context&) {}                      //重置组件
 
 
 
