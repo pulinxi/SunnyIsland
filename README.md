@@ -1,4 +1,4 @@
-**本项目参照哔哩哔哩 up 主 ZiyuGameDev 老师的视频教程制作，原视频链接：https://www.bilibili.com/video/BV1u7NizLEBa?t=222.2**
+**本项目参照哔哩哔哩 up 主 ZiyuGameDev 老师的视频教程制作，但并不是完全照抄，更多的是学习老师的思路然后自己实现一遍，并且后续还添加了很多功能，原视频链接：https://www.bilibili.com/video/BV1u7NizLEBa?t=222.2**
 
 **在此感谢ZiyuGameDev老师制作教学视频！！！**
 
@@ -30,8 +30,6 @@ P / ESC - 显示菜单和暂停;
 - [spdlog](https://github.com/gabime/spdlog)
 
 # 致谢
-
-
 
 - 精灵
   - https://ansimuz.itch.io/sunny-land-pixel-game-art
