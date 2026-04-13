@@ -86,6 +86,13 @@ namespace game::scene {
          */
         void processPendingEffect();
 
+        /**
+         *@brief 创建一个新的对象池对象给对象池使用
+         *
+         * @return std::unique_ptr<engine::object::GameObject>
+         */
+        std::unique_ptr<engine::object::GameObject> createNewPoolObject();
+
 
         // --- UI 相关函数 ---
         void createScoreUI();                           ///< @brief 创建得分UI

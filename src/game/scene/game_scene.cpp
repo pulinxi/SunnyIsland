@@ -78,7 +78,7 @@ namespace game::scene {
             context_.getInputManager().setShouldQuit(true);
             return;
         }
-        if (!initEffectPool(20))
+        if (!initEffectPool(1))
         {
             spdlog::error("对象池初始化失败，无法继续。");
             context_.getInputManager().setShouldQuit(true);
@@ -158,7 +158,7 @@ namespace game::scene {
         if (context_.getInputManager().isActionPressed("attack")) {
             spdlog::debug("从对象池中创建特效");
             context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");         // 播放音效
-            createEffectwithPool(context_.getInputManager().getLogicalMousePosition());
+            createEffectwithPool(context_.getInputManager().getLogicalMousePosition() + context_.getCamera().getPosition());
         }
 
         for (auto it = effects.begin();it != effects.end();)
@@ -306,23 +306,7 @@ namespace game::scene {
         effect_pool_ = std::make_unique<engine::pool::ObjectPool<engine::object::GameObject>>();
         for (int i = 0;i < nums;i++)
         {
-            auto effect_obj = std::make_unique<engine::object::GameObject>("effect_item");
-            effect_obj->addComponent<engine::component::TransformComponent>(glm::vec2(0.0f, 0.0f));
-
-            // --- 根据标签创建不同的精灵组件和动画--- 
-            auto animation = std::make_unique<engine::render::Animation>("effect", false);
-
-            effect_obj->addComponent<engine::component::SpriteComponent>("assets/textures/FX/item-feedback.png",
-                context_.getResourceManager(),
-                engine::utils::Alignment::CENTER);
-            for (auto j = 0; j < 4; ++j) {
-                animation->addFrame({ static_cast<float>(j * 32), 0.0f, 32.0f, 32.0f }, 0.1f);
-            }
-            // --- 根据创建的动画，添加动画组件，并设置为单次播放 ---
-            auto* animation_component = effect_obj->addComponent<engine::component::AnimationComponent>();
-            animation_component->addAnimation(std::move(animation));
-            animation_component->setOneShotRemoval(true);
-            animation_component->playAnimation("effect");
+            auto effect_obj = createNewPoolObject();
             if (!effect_pool_->addObject(std::move(effect_obj)))
             {
                 spdlog::error("对象池的第{}个对象添加失败", i);
@@ -537,8 +521,13 @@ namespace game::scene {
     void GameScene::createEffectwithPool(const glm::vec2& center_pos)
     {
         auto temp = std::move(effect_pool_->getObject());
-        temp->getComponent < engine::component::TransformComponent>()->setPosition(
-            player_->getComponent<engine::component::TransformComponent>()->getPosition() + glm::vec2(50.0f, 20.0f));
+        if (temp == nullptr)
+        {
+            effect_pool_->addObject(createNewPoolObject());
+            spdlog::warn("创建了一个对象池对象");
+            temp = std::move(effect_pool_->getObject());
+        }
+        temp->getComponent < engine::component::TransformComponent>()->setPosition(center_pos);
         pending_effects.push_back(std::move(temp));
     }
 
@@ -550,6 +539,28 @@ namespace game::scene {
         }
 
         pending_effects.clear();
+    }
+
+    std::unique_ptr<engine::object::GameObject> GameScene::createNewPoolObject()
+    {
+        auto effect_obj = std::make_unique<engine::object::GameObject>("effect_item");
+        effect_obj->addComponent<engine::component::TransformComponent>(glm::vec2(0.0f, 0.0f));
+
+        // --- 根据标签创建不同的精灵组件和动画--- 
+        auto animation = std::make_unique<engine::render::Animation>("effect", false);
+
+        effect_obj->addComponent<engine::component::SpriteComponent>("assets/textures/FX/item-feedback.png",
+            context_.getResourceManager(),
+            engine::utils::Alignment::CENTER);
+        for (auto j = 0; j < 4; ++j) {
+            animation->addFrame({ static_cast<float>(j * 32), 0.0f, 32.0f, 32.0f }, 0.1f);
+        }
+        // --- 根据创建的动画，添加动画组件，并设置为单次播放 ---
+        auto* animation_component = effect_obj->addComponent<engine::component::AnimationComponent>();
+        animation_component->addAnimation(std::move(animation));
+        animation_component->setOneShotRemoval(true);
+        animation_component->playAnimation("effect");
+        return std::move(effect_obj);
     }
 
     void GameScene::createScoreUI()
