@@ -17,6 +17,7 @@ namespace game::component::state {
     }
 
     void FallState::exit() {
+        spdlog::info("退出下落状态");
 
     }
 
@@ -27,7 +28,7 @@ namespace game::component::state {
         auto sprite_component = player_component_->getSpriteComponent();
 
         // 如果按下冲刺键
-        if (input_manager.isActionPressed("dash") && player_component_->getDashCount() > 0)
+        if (input_manager.isActionPressed("dash") && player_component_->getDashCount() > 0)     //更新缓冲队列
         {
             if (input_manager.isActionDown("move_left"))
             {
@@ -46,6 +47,15 @@ namespace game::component::state {
                 player_component_->setDashDirection({ player_component_->getDashDirection().x, 1.0f });
             }
             return std::make_unique<DashState>(player_component_);
+        }
+        else if (input_manager.isActionPressed("dash") && player_component_->getDashCount() <= 0)
+        {
+            context.getInputManager().pushInputBufferBack("dash");
+        }
+
+        if (input_manager.isActionPressed("jump"))
+        {
+            context.getInputManager().pushInputBufferBack("jump");
         }
 
         // 如果按下上下键，且与梯子重合，则切换到 ClimbState

@@ -35,13 +35,15 @@ namespace game::component::state {
         }
 
         // 如果按下“jump”则切换到 JumpState
-        if (input_manager.isActionPressed("jump")) {
+        if (input_manager.isActionPressed("jump") || context.getInputManager().getInputBufferFront() == "jump") {
+            context.getInputManager().clearInputBuffer();
             return std::make_unique<JumpState>(player_component_);
         }
 
         // 如果按下冲刺键
-        if (input_manager.isActionPressed("dash") && player_component_->getDashCount() > 0)
+        if ((input_manager.isActionPressed("dash") || context.getInputManager().getInputBufferFront() == "dash") && player_component_->getDashCount() > 0)
         {
+            context.getInputManager().clearInputBuffer();
             if (input_manager.isActionDown("move_left"))
             {
                 player_component_->setDashDirection({ -1.0f, player_component_->getDashDirection().y });

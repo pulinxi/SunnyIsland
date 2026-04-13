@@ -33,6 +33,7 @@ namespace game::component::state {
     std::unique_ptr<PlayerState> JumpState::handleInput(engine::core::Context& context)
     {
         auto input_manager = context.getInputManager();
+        //spdlog::info("state中的input的地址是{}", static_cast<const void*>(&(context.getInputManager())));
         auto physics_component = player_component_->getPhysicsComponent();
         auto sprite_component = player_component_->getSpriteComponent();
 
@@ -56,6 +57,19 @@ namespace game::component::state {
                 player_component_->setDashDirection({ player_component_->getDashDirection().x, 1.0f });
             }
             return std::make_unique<DashState>(player_component_);
+        }
+        else if (input_manager.isActionPressed("dash") && player_component_->getDashCount() <= 0)
+        {
+            /////////////////////////////////////////////////////////////
+            //input_manager.pushInputBufferBack("dash");        一开始这样做所以导致真正的input_buffer_一直没有元素
+            context.getInputManager().pushInputBufferBack("dash");
+        }
+
+        if (input_manager.isActionPressed("jump"))
+        {
+            spdlog::info("inputmanager的地址是{}", static_cast<const void*>(&(input_manager)));
+            spdlog::info("context的地址是{}", static_cast<const void*>(&context));
+            context.getInputManager().pushInputBufferBack("jump");
         }
 
         // 如果按下上下键，且与梯子重合，则切换到 ClimbState

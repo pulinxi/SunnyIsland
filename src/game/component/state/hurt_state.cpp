@@ -4,6 +4,7 @@
 #include "fall_state.h"
 #include "../player_component.h"
 #include "../../../engine/core/context.h"
+#include "../../../engine/input/input_manager.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/sprite_component.h"
 #include "../../../engine/component/audio_component.h"
@@ -32,8 +33,16 @@ namespace game::component::state {
 
     }
 
-    std::unique_ptr<PlayerState> HurtState::handleInput(engine::core::Context&) {
-        // 硬直期不能进行任何操控
+    std::unique_ptr<PlayerState> HurtState::handleInput(engine::core::Context& context) {
+        auto input_manager = context.getInputManager();
+        if (input_manager.isActionPressed("jump"))
+        {
+            context.getInputManager().pushInputBufferBack("jump");
+        }
+        if (input_manager.isActionPressed("dash"))
+        {
+            context.getInputManager().pushInputBufferBack("dash");
+        }
         return nullptr;
     }
 

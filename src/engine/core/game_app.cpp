@@ -40,7 +40,7 @@ namespace engine::core {
             float delta_time = time_->getDeltaTime();
 
 
-            input_manager_->update();
+            input_manager_->update(delta_time);
             handleEvents();
             update(delta_time);
             render();
@@ -254,6 +254,7 @@ namespace engine::core {
     {
         try {
             input_manager_ = std::make_unique<engine::input::InputManager>(sdl_renderer_, config_.get());
+            spdlog::info("inputmanager的地址是{}", static_cast<const void*>(&(*input_manager_)));
         }
         catch (const std::exception& e) {
             spdlog::error("初始化输入管理器失败: {}", e.what());
@@ -274,6 +275,7 @@ namespace engine::core {
                 *physics_engine_,
                 *audio_player_,
                 *game_state_);
+            spdlog::info("context的地址是{}", static_cast<const void*>(&(*context_)));
         }
         catch (const std::exception& e) {
             spdlog::error("初始化上下文失败: {}", e.what());

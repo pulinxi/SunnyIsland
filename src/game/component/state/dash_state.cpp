@@ -1,9 +1,11 @@
 #include "dash_state.h"
 #include <glm/glm.hpp>
 #include <math.h>
+#include "../../../engine/core/context.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/sprite_component.h"
 #include "../../../engine/component/audio_component.h"
+#include "../../../engine/input/input_manager.h"
 #include "../player_component.h"
 #include "idle_state.h"
 
@@ -45,12 +47,21 @@ namespace game::component::state
         player_component_->resetDashDirection();
     }
 
-    std::unique_ptr<PlayerState> DashState::handleInput(engine::core::Context&)
+    std::unique_ptr<PlayerState> DashState::handleInput(engine::core::Context& context)
     {
+        auto input_manager = context.getInputManager();
+        if (input_manager.isActionPressed("jump"))     //处理输入缓冲
+        {
+            context.getInputManager().pushInputBufferBack("jump");
+        }
+        else if (input_manager.isActionPressed("dash"))
+        {
+            context.getInputManager().pushInputBufferBack("dash");
+        }
         return nullptr;
     }
 
-    std::unique_ptr<PlayerState> DashState::update(float delta_time, engine::core::Context&)
+    std::unique_ptr<PlayerState> DashState::update(float delta_time, engine::core::Context& context)
     {
         player_component_->setDashTimer(player_component_->getDashTimer() + delta_time);
         if (player_component_->getDashTimer() >= player_component_->getDashInterval())      //冲刺时间递增

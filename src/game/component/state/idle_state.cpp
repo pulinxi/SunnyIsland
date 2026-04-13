@@ -28,8 +28,9 @@ namespace game::component::state {
 
 
         // 如果按下冲刺键
-        if (input_manager.isActionPressed("dash") && player_component_->getDashCount() > 0)
+        if ((input_manager.isActionPressed("dash") || context.getInputManager().getInputBufferFront() == "dash") && player_component_->getDashCount() > 0)
         {
+            context.getInputManager().clearInputBuffer();
             if (input_manager.isActionDown("move_left"))
             {
                 player_component_->setDashDirection({ -1.0f, player_component_->getDashDirection().y });
@@ -49,6 +50,7 @@ namespace game::component::state {
             return std::make_unique<DashState>(player_component_);
         }
 
+
         // 如果按"move_up"键，且与梯子重合，则切换到 ClimbState
         if (physics_component->hasCollidedLadder() && input_manager.isActionDown("move_up")) {
             return std::make_unique<ClimbState>(player_component_);
@@ -62,12 +64,13 @@ namespace game::component::state {
         }
 
         // 如果按下了左右移动键，则切换到 WalkState
-        if (input_manager.isActionDown("move_left") || input_manager.isActionDown("move_right")) {
+        if (input_manager.isActionDown("move_left") || context.getInputManager().isActionDown("move_right")) {
             return std::make_unique<WalkState>(player_component_);
         }
 
         // 如果按下“jump”则切换到 JumpState
-        if (input_manager.isActionPressed("jump")) {
+        if (input_manager.isActionPressed("jump") || context.getInputManager().getInputBufferFront() == "jump") {
+            context.getInputManager().clearInputBuffer();
             return std::make_unique<JumpState>(player_component_);
         }
         return nullptr;

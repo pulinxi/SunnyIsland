@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 #include <variant>
+#include <queue>
 #include <SDL3/SDL_render.h>
 #include <glm/vec2.hpp>
 
@@ -40,9 +41,12 @@ namespace engine::input
         std::unordered_map<std::string, std::vector<std::string>> actions_to_keyname_map_;      //存储动作到按键名的映射
         std::unordered_map<std::variant<SDL_Scancode, Uint32>, std::vector<std::string>> input_to_actions_map_;     //从输入到关联的动作名称列表
         std::unordered_map<std::string, ActionState> action_states_;        //存储每个动作的当前状态
+        std::queue<std::string> input_buffer_;                  //存储预输入的指令（预输入指令缓存器）
 
         bool should_quit_ = false;       //退出标志
         glm::vec2 mouse_position_;        //鼠标的位置
+        float input_buffer_pop_interval_ = 0.2f;   //预输入指令缓存器的弹出时间
+        float input_buffer_pop_timer_ = 0.0f;      //预输入指令缓存器的弹出计时器
 
 
 
@@ -58,19 +62,28 @@ namespace engine::input
         InputManager(SDL_Renderer* sdl_renderer, const engine::core::Config* config);
 
 
-        void update();      //更新输入状态
+        void update(float delta_time);      //更新输入状态
 
         //动作状态检查
         bool isActionDown(const std::string& action_name) const;        //动作是否触发(持续按下或按下)
         bool isActionPressed(const std::string& action_name) const;      //动作是否在本帧按下
         bool isActionReleased(const std::string& action_name) const;    //动作是否在本帧释放
 
+        //指令缓冲队列操作函数
+        std::string getInputBufferFront() const;      //获取输入缓存队列的第一个元素
+        void popInputBufferFront() { input_buffer_.pop(); }             //删除输入缓存队列的第一个元素
+        void pushInputBufferBack(std::string action_name);          //给缓存队列添加元素
+        void clearInputBuffer();        //将输入缓存队列置空
+        bool isInputBufferEmpty() { return input_buffer_.empty(); }
+
 
         bool shouldQuit() const;                    //查询退出状态
         void setShouldQuit(bool should_quit);       //设置退出状态
 
         glm::vec2 getMousePosition() const;         //获取鼠标位置（屏幕坐标）
-        glm::vec2 getLogicalMousePosition() const;  //获取鼠标位置（逻辑坐标)
+        glm::vec2 getLogicalMousePosition() const;  //获取鼠标位置（逻辑坐标)       
+        void setInputBufferPopInterval(float interval) { input_buffer_pop_interval_ = interval; }       //设置缓冲时间
+        float getInputBufferPopInterval() const { return input_buffer_pop_interval_; }                  //获取缓冲时间
 
 
     private:

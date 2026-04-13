@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 #include <spdlog/spdlog.h>
 #include <glm/glm.hpp>
+#include <algorithm>
 
 
 namespace engine::input
@@ -21,10 +22,11 @@ namespace engine::input
         SDL_GetMouseState(&x, &y);
         mouse_position_ = glm::vec2(x, y);
         spdlog::trace("鼠标初始位置:({} {})", mouse_position_.x, mouse_position_.y);
+        //spdlog::info("input_buffer_的地址是{}", static_cast<const void*>(&(input_buffer_)));
 
     }
 
-    void InputManager::update()
+    void InputManager::update(float delta_time)
     {
         //1根据上一帧的值更新默认动作状态
         for (auto& [action_name, state] : action_states_)
@@ -44,6 +46,30 @@ namespace engine::input
         while (SDL_PollEvent(&event))   // 轮询直到所有事件都被处理！
         {
             processEvent(event);
+        }
+
+        //更新预输入指令缓存
+        if (!input_buffer_.empty())
+        {
+            input_buffer_pop_timer_ += delta_time;
+            if (input_buffer_pop_timer_ >= input_buffer_pop_interval_)
+            {
+                std::string a = input_buffer_.front();
+                input_buffer_.pop();
+                spdlog::info("缓存队列弹出了{}", a);
+                input_buffer_pop_timer_ = 0.0f;
+            }
+        }
+        else
+        {
+            input_buffer_pop_timer_ = 0.0f;
+        }
+        std::queue<std::string> copy = input_buffer_;
+        int i = 1;
+        while (!copy.empty())
+        {
+            spdlog::info("第{}个指令是{}", i++, copy.front());
+            copy.pop();
         }
     }
 
@@ -69,7 +95,36 @@ namespace engine::input
         return false;
     }
 
+    std::string InputManager::getInputBufferFront() const
+    {
+        if (input_buffer_.empty())
+        {
+            return "";
+        }
+        else
+        {
+            return input_buffer_.front();
+        }
+    }
 
+
+
+    void InputManager::pushInputBufferBack(std::string action_name)
+    {
+        input_buffer_.push(action_name);
+        //spdlog::info("state中的input_buffer的地址是{}", static_cast<const void*>(&(input_buffer_)));
+        spdlog::info("缓存队列添加了{},队列大小：{}", action_name, input_buffer_.size());
+    }
+
+    void InputManager::clearInputBuffer()
+    {
+        if (!input_buffer_.empty())
+        {
+            std::queue<std::string> empty;
+            std::swap(empty, input_buffer_);
+        }
+
+    }
 
     bool InputManager::shouldQuit() const {
         return should_quit_;
