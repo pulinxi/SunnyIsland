@@ -43,7 +43,7 @@ namespace game::component::state
     {
         auto* physics_component = player_component_->getPhysicsComponent();
         physics_component->setUseGravity(true);
-        physics_component->setVelocity(glm::vec2(0.0f, 0.0f));
+        physics_component->setVelocity(glm::vec2(physics_component->getVelocity().x, 0.0f));
         player_component_->resetDashDirection();
     }
 

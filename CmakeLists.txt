@@ -91,6 +91,7 @@ add_executable(${TARGET}
                 src/game/scene/menu_scene.cpp
                 src/game/scene/end_scene.cpp
                 src/game/component/state/dash_state.cpp
+                src/engine/component/trail_component.cpp
                 )
 
 # 链接库

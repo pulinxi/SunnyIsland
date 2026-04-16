@@ -8,6 +8,7 @@
 #include "../component/animation_component.h"
 #include "../component/health_component.h"
 #include "../component/audio_component.h"
+#include "../component/trail_component.h"
 #include "../object/game_object.h"
 #include "../scene/scene.h"
 #include "../core/context.h"
@@ -242,11 +243,22 @@ namespace engine::scene {
                 //创建游戏对象并添加组件
                 auto game_object = std::make_unique<engine::object::GameObject>(object_name);
                 game_object->addComponent<engine::component::TransformComponent>(position, scale, rotation);
-                game_object->addComponent<engine::component::SpriteComponent>(std::move(tile_info.sprite), scene.getContext().getResourceManager());
 
                 //获取瓦片json信息  
                 //1. 必然存在，因为前面已经执行过getTileInfoByGid(gid)  2. 这里再次获取一次json实际上时可以优化掉只获取一次的
                 auto tile_json = getTileJsonByGid(gid);
+
+                //因为需要让对象的精灵图在拖尾的上一层，所以拖尾组件的添加放在这里，比精灵组件先添加
+                auto trail = getTileProperty<bool>(tile_json, "trail");
+                if (trail)
+                {
+                    auto sprite = engine::render::Sprite("assets/textures/Items/circle.png"); // 使用一个简单的圆形纹理作为示例
+                    game_object->addComponent<engine::component::TrailComponent>(&scene.getContext().getResourceManager(), sprite, 4.0f, glm::vec2(0.1f));
+                }
+
+                //先添加拖尾再添加精灵组件
+                game_object->addComponent<engine::component::SpriteComponent>(std::move(tile_info.sprite), scene.getContext().getResourceManager());
+
 
                 //获取碰撞信息：
                 //1. 如果是SOLID型就添加物理组件并且dst_size就是碰撞盒大小

@@ -3,6 +3,7 @@
 #include "../component/physics_component.h"
 #include "../component/transform_component.h"
 #include "../component/collider_component.h"
+#include "../component/trail_component.h"
 #include "../component/tilelayer_component.h"
 #include "../object/game_object.h"
 #include <set>
@@ -38,6 +39,19 @@ namespace engine::physics
         auto it = std::remove(collision_tile_layers_.begin(), collision_tile_layers_.end(), layer);
         collision_tile_layers_.erase(it, collision_tile_layers_.end());
         spdlog::trace("碰撞瓦片注销完成");
+    }
+
+    void PhysicsEngine::registerTrail(engine::component::TrailComponent* Trail)
+    {
+        Trails.push_back(Trail);
+        spdlog::trace("拖尾注册完毕");
+    }
+
+    void PhysicsEngine::unregisterTrail(engine::component::TrailComponent* Trail)
+    {
+        auto it = std::remove(Trails.begin(), Trails.end(), Trail);
+        Trails.erase(it);
+        spdlog::trace("拖尾注销完毕");
     }
 
     void PhysicsEngine::checkObjectCollisions()
@@ -458,7 +472,7 @@ namespace engine::physics
             pc->velocity_ += (pc->getForce() / pc->getMass()) * delta_time;
             pc->clearForce();//清楚当前帧的力
 
-            resolveTileCollision(pc, delta_time);
+            resolveTileCollision(pc, delta_time);       //这一步之后得到游戏对象的新位置
             applyWorldBounds(pc);
         }
         //处理对象碰撞

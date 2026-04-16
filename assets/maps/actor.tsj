@@ -113,6 +113,11 @@
                  "name":"tag",
                  "type":"string",
                  "value":"player"
+                }, 
+                {
+                 "name":"trail",
+                 "type":"bool",
+                 "value":true
                 }],
          "width":32,
          "x":0,
